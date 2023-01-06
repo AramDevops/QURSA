@@ -14,6 +14,7 @@ class LoginApp(HydraHeadApp):
         """
         Application entry point.
         """
+        st.markdown("<br><br>", unsafe_allow_html=True)
         st.markdown("<center><img style='margin-top:-200px;'src='https://i.imgur.com/aHsbSZZ.gif'></center>", unsafe_allow_html=True)
         c1,c2,c3, = st.columns([2,2,2])
 
