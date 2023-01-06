@@ -1,0 +1,9 @@
+hydralit
+hydralit_components
+matplotlib
+pandas
+qiskit
+rsa
+streamlit
+pylatexenc
+sympy
