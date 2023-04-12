@@ -291,7 +291,7 @@ class CheatApp(HydraHeadApp):
                         st.write('d = ', cle_p)
 
                         elapsed_time_secs = time.time() - start_time
-                        msg_time = "L'exécution a pris : %s secs" % timedelta(seconds=round(elapsed_time_secs))
+                        msg_time = "L'exécution a pris : %s" % timedelta(seconds=round(elapsed_time_secs))
                         st.write(msg_time)
                 except:
                     st.write("Pas assez de qubits !")
