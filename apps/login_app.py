@@ -38,7 +38,7 @@ class LoginApp(HydraHeadApp):
         st.markdown("<h6> © 2022 QURSA All right reserved.</h6>", unsafe_allow_html=True)
         st.markdown("<h6> Version 1.0</h6>", unsafe_allow_html=True)
         st.markdown("<h6> Author Akram Nasr</h6>", unsafe_allow_html=True)
-        st.markdown("<img id='uqtr' src='https://asset.brandfetch.io/idm7pxE4-9/idegW6qzLx.png'>", unsafe_allow_html=True)
+        st.markdown("<img id='uqtr' src='https://crunchbase-production-res.cloudinary.com/image/fetch/s--wuEAmLGW--/c_lpad,h_256,w_256,f_auto,q_auto:eco,dpr_1/http://upload.wikimedia.org/wikipedia/en/thumb/7/77/Logo20UQTR.png/240px-Logo20UQTR.png'>", unsafe_allow_html=True)
         if form_data['submitted']:
             self._do_login(form_data, c2)
 
