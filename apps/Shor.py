@@ -133,9 +133,9 @@ class CheatApp(HydraHeadApp):
 
         st.write(f"Fonction: \n\tU(x) = a^x mod {N}")
 
-        def c_modN(a, power):
+        def c_modN(a, k):
             U = QuantumCircuit(5)
-            for iteration in range(power):
+            for _ in range(k):
                 if a & 1:  # check if a is odd
                     for q in range(5 // 2):
                         U.rx(math.pi / 2, q)  # use rx gate for qubit rotation
@@ -143,17 +143,15 @@ class CheatApp(HydraHeadApp):
                     continue  # skip rest of loop iteration if a is even
 
             U = U.to_gate()
-            U.name = "%i^%i mod N" % (a, power)
+            U.name = "%i^%i mod N" % (a, k)
             c_U = U.control()
             return c_U
 
         def modular_exponentiation(qc, n, m, a):
             #st.write(qc,n,m,a)
-            for x in range(n):
-                exponent = 2 ** x
-                qc.append(c_modN(a, exponent),
-                          [x] + list(range(n, n + m)))
-
+            for k in range(n):
+                qc.append(c_modN(a, k),
+                          [k] + list(range(n, n + m)))
 
         def qft_dagger(qc, measurement_qubits):
             qc.append(QFT(len(measurement_qubits),
@@ -258,7 +256,7 @@ class CheatApp(HydraHeadApp):
                             if guess != 1 and guess != N and N % guess == 0:
                                 factors.add(guess)
                                 # Print the value of r
-                                r = int(measured_value / 2)
+                                r = measured_value / 2
                                 st.write('La valeur de la période "r" est:', {r})
                                 f = math.gcd(int((a ** (measured_value / 2))) + 1, N)
                                 k = math.gcd(int((a ** (measured_value / 2))) - 1, N)
