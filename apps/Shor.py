@@ -195,7 +195,7 @@ class CheatApp(HydraHeadApp):
             qc.barrier()
 
             # apply error correction
-            #error_correction(qc, n)
+            error_correction(qc, n)
 
             # apply inverse QFT
             qft_dagger(qc, range(n))
