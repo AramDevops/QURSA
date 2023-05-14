@@ -134,7 +134,7 @@ class CheatApp(HydraHeadApp):
         st.write(f"Fonction: \n\tU(x) = a^x mod {N}")
 
         def c_modN(a, k):
-            target_qubits = 6
+            target_qubits = 5
             U = QuantumCircuit(target_qubits)
             for _ in range(k):
                 if a & 1:  # check if a is odd
@@ -234,7 +234,7 @@ class CheatApp(HydraHeadApp):
                 try :
                     attempt += 1
                     a = value_a(N)
-                    qc = period_finder(6, 6, a)
+                    qc = period_finder(5, 5, a)
 
                     simulator = Aer.get_backend('qasm_simulator')
                     counts = execute(qc, backend=simulator).result().get_counts(qc)
