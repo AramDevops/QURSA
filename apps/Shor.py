@@ -151,7 +151,7 @@ class CheatApp(HydraHeadApp):
         def modular_exponentiation(qc, n, m, a):
             #st.write(qc,n,m,a)
             for k in range(n):
-                qc.append(c_modN(a, k**4),
+                qc.append(c_modN(a, k),
                           [k] + list(range(n, n + m)))
 
         def qft_dagger(qc, measurement_qubits):
