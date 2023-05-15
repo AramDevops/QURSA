@@ -138,7 +138,7 @@ class CheatApp(HydraHeadApp):
             U = QuantumCircuit(target_qubits)
             for _ in range(k):
                 if a & 1:  # check if a is odd
-                    for q in range(3):
+                    for q in range(5):
                         U.rx(math.pi / 2, q)  # use rx gate for qubit rotation
                 else:
                     continue  # skip rest of loop iteration if a is even
