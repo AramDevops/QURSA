@@ -138,7 +138,7 @@ class CheatApp(HydraHeadApp):
             U = QuantumCircuit(target_qubits)
             for _ in range(k):
                 if a & 1:  # check if a is odd
-                    for q in range(2):
+                    for q in range(3):
                         U.rx(math.pi / 2, q)  # use rx gate for qubit rotation
                 else:
                     continue  # skip rest of loop iteration if a is even
@@ -151,7 +151,7 @@ class CheatApp(HydraHeadApp):
         def modular_exponentiation(qc, n, m, a):
             #st.write(qc,n,m,a)
             for k in range(n):
-                qc.append(c_modN(a, k),
+                qc.append(c_modN(a, k**2),
                           [k] + list(range(n, n + m)))
 
         def qft_dagger(qc, measurement_qubits):
