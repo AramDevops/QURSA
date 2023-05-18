@@ -234,7 +234,7 @@ class CheatApp(HydraHeadApp):
                 try :
                     attempt += 1
                     a = value_a(N)
-                    qc = period_finder(5, 8, a)
+                    qc = period_finder(4, 8, a)
 
                     simulator = Aer.get_backend('qasm_simulator')
                     counts = execute(qc, backend=simulator).result().get_counts(qc)
