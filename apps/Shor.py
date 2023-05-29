@@ -19,6 +19,13 @@ import random
 import math
 import time
 
+from qiskit import IBMQ
+
+#IBMQ.save_account('25ec632a10279f5d4a7deb00aaf8b96f03a5351d0942fd8b3825d13419faf79529d6a1a2032475d437a3dbbfdfb120fc7edd383f7746784f7fab096704f0057e')
+
+#IBMQ.load_account()
+#provider = IBMQ.get_provider('ibm-q')
+#backend = provider.get_backend('ibmq_qasm_simulator')
 
 def img_to_bytes(img_path):
     img_bytes = Path(img_path).read_bytes()
@@ -46,8 +53,8 @@ class CheatApp(HydraHeadApp):
             -moz-box-shadow: 10px 10px 5px  rgb(38, 255, 4);
             -webkit-box-shadow: 10px 10px 5px  rgb(38, 255, 4);
             -khtml-box-shadow: 10px 10px 5px  rgb(38, 255, 4);
-            margin-top: -32%;
-            margin-bottom: -18%;
+            margin-top: -10%;
+            margin-bottom: -15%;
             border-radius: 20px;}
             </style>""" , unsafe_allow_html=True)
 
@@ -68,42 +75,44 @@ class CheatApp(HydraHeadApp):
                     return False
             return True
 
-        st.sidebar.markdown(f"Voici des nombres premiers générés aléatoirement avec leurs niveaux de difficulté")
+        option = st.sidebar.radio("Choisissez une option :",
+                                  ("Insérer le nombre N", "Insérer les nombres premiers P & Q"))
 
-        st.sidebar.write(f"Très facile : {random.sample(generate_primes(300, 700), 3)}")
-        st.sidebar.write(f"Facile : {random.sample(generate_primes(3000, 7000), 3)}")
-        st.sidebar.write(f"Moyen : {random.sample(generate_primes(30000, 70000), 3)}")
-        st.sidebar.write(f"Moyen/Long : {random.sample(generate_primes(300000, 700000), 3)}")
+        if option == "Insérer le nombre N":
+            st.sidebar.markdown("Entrez le nombre N :")
+            number_N = st.sidebar.number_input("N :", key="number_N", min_value=15)
+            p, q = None, None
 
-        st.sidebar.markdown("Entrez les nombres premiers P&Q : ")
-        p = st.sidebar.number_input("P : ", key="number_1", min_value=1)
-        if not is_prime(p):
-            st.sidebar.error("P doit être un nombre premier")
-        q = st.sidebar.number_input("Q : ", key="number_2", min_value=1)
-        if not is_prime(q):
-            st.sidebar.error("Q doit être un nombre premier")
+        elif option == "Insérer les nombres premiers P & Q":
+            st.sidebar.markdown("Voici des nombres premiers générés aléatoirement avec leurs niveaux de difficulté")
+            st.sidebar.write(f"Très facile : {random.sample(generate_primes(300, 700), 3)}")
+            st.sidebar.write(f"Facile : {random.sample(generate_primes(3000, 7000), 3)}")
+            st.sidebar.write(f"Moyen : {random.sample(generate_primes(30000, 70000), 3)}")
+            st.sidebar.write(f"Moyen/Long : {random.sample(generate_primes(300000, 700000), 3)}")
+
+            st.sidebar.markdown("Entrez les nombres premiers P & Q : ")
+            p = st.sidebar.number_input("P :", key="number_P", min_value=1, value=3)
+            if not is_prime(p):
+                st.sidebar.error("P doit être un nombre premier")
+            q = st.sidebar.number_input("Q :", key="number_Q", min_value=1,value=5)
+            if not is_prime(q):
+                st.sidebar.error("Q doit être un nombre premier")
+
+        st.sidebar.markdown("Nombre de Qubits :")
+        controll_qubits = st.sidebar.number_input("Qubits de Contrôle :", min_value=2, max_value=7, value=5,
+                                                  key="controll_qubits")
+
+        target_qubits = st.sidebar.number_input("Qubits cibles :", min_value=2, max_value=7, value=5,
+                                                key="target_qubits")
 
         # Display the selected or entered number
         st.markdown("Vous avez sélectionné : ")
-        st.write("Votre valeur P : ",p)
-        st.write("Votre valeur Q : ", q)
-
-        # Easy test:
-        #p = 433
-        #q = 619
-
-        # Easy-Medium test:
-        #p = 12281
-        #q = 13297
-
-        # Medium test:
-        #p = 450563
-        #q = 462263
-
-        # list of Hard tests:
-        # big_primes_numb = [978270003817, 1000000005721, 978270003427, 999999993029, 989999983979,1000000001491, 1000000005677, 978270002791]
-
-        N = p*q
+        if option == "Insérer les nombres premiers P & Q":
+            st.write("Votre valeur P : ",p)
+            st.write("Votre valeur Q : ", q)
+            N = p * q
+        else:
+           N = number_N
 
         st.write(f'N : ', N)
 
@@ -120,39 +129,35 @@ class CheatApp(HydraHeadApp):
         st.write(f"Le message chiffré avec la clé publique : {msg_ssl}")
 
         def value_a(N):
-
-            while not False:
-                a = random.randint(2, N)
+            while True:
+                a = random.randrange(2, N)  # Start from N//2 and increment by 2
                 if math.gcd(a, N) == 1:
                     return a
 
-
         def initialize_qubits(qc, n, m):
             qc.h(range(n))  # apply hadamard gates
-            qc.x(n + m - 1)  # set qubit to 1
+            qc.x(n)
 
         st.write(f"Fonction: \n\tU(x) = a^x mod {N}")
 
         def c_modN(a, k):
-            target_qubits = 8
             U = QuantumCircuit(target_qubits)
             for _ in range(k):
-                if a & 1:  # check if a is odd
+                if a % 2 != 0:
                     for q in range(target_qubits):
-                        U.rx(math.pi / 2, q)  # use rx gate for qubit rotation
-                else:
-                    continue  # skip rest of loop iteration if a is even
-
+                        U.x(q)
             U = U.to_gate()
             U.name = "%i^%i mod N" % (a, k)
             c_U = U.control()
             return c_U
 
         def modular_exponentiation(qc, n, m, a):
-            #st.write(qc,n,m,a)
-            for k in range(n):
-                qc.append(c_modN(a, k),
-                          [k] + list(range(n, n + m)))
+            c_modN_values = [c_modN(a, k**2) for k in range(n)]  # Precompute c_modN values
+
+            for k, c_modN_value in enumerate(c_modN_values):
+                if k > 0:
+                    qc.barrier()  # Add a barrier between iterations if needed
+                qc.append(c_modN_value, [k] + list(range(n, n + m)))
 
         def qft_dagger(qc, measurement_qubits):
             qc.append(QFT(len(measurement_qubits),
@@ -164,22 +169,26 @@ class CheatApp(HydraHeadApp):
             qc.measure(n, n)
 
         def error_correction(qc, n):
-            qc.reset(range(n + 3))
+            qc.reset(range(n + 2))
             qc.barrier()
             for i in range(n):
                 # apply CNOT gates to correct bit flip errors
                 qc.cx(i, n)
                 qc.cx(i, n + 1)
                 qc.cx(i, n + 2)
+
                 qc.x(n)
                 qc.x(n + 1)
                 qc.x(n + 2)
+
                 qc.cx(i, n)
                 qc.cx(i, n + 1)
                 qc.cx(i, n + 2)
+
                 qc.x(n)
                 qc.x(n + 1)
                 qc.x(n + 2)
+
             qc.barrier()
 
         def period_finder(n, m, a):
@@ -203,8 +212,6 @@ class CheatApp(HydraHeadApp):
 
             # measure the n measurement qubits
             measure(qc, range(n))
-
-
             return qc
 
         def Modular_multiplicative_inverse(a, n):
@@ -231,14 +238,22 @@ class CheatApp(HydraHeadApp):
             st.write("Calcul...", end='\t')
 
             while not factor_found:
+                if stop_button:
+                    st.write("Calcul arrêté.")
+                    break
                 try :
+                    #n = math.ceil(math.log2(N))
+                    #m = n + 1
                     attempt += 1
                     a = value_a(N)
-                    qc = period_finder(4, 8, a)
+                    qc = period_finder(controll_qubits, target_qubits, a)
 
                     simulator = Aer.get_backend('qasm_simulator')
                     counts = execute(qc, backend=simulator).result().get_counts(qc)
 
+                    #st.write(counts)
+
+                    #counts = execute(qc, backend=backend).result().get_counts(qc)
 
                     # convert and add binary periods to list
                     counts_dec = sorted([int(measured_value[::-1], 2)
@@ -250,7 +265,6 @@ class CheatApp(HydraHeadApp):
 
                         guesses = [math.gcd(int((a ** (measured_value / 2))) + 1, N),
                                    math.gcd(int((a ** (measured_value / 2))) - 1, N)]
-
 
                         for guess in guesses:
                             # ignore trivial factors
@@ -264,6 +278,7 @@ class CheatApp(HydraHeadApp):
                                 st.write('On teste les deux formules pour trouver les facteurs avec:')
                                 st.write('N_1 = gcd(' , a , '^(', r ,'/2) + 1, ', N ,') ')
                                 st.write('N_2 = gcd(' , a , '^(', r ,'/2) - 1, ', N ,') ')
+
                                 if f > 1:
                                     st.write(f'Le facteur trouvé avec gcd(' , a , '^(', r ,'/2) + 1, ', N ,') = ',{f})
                                 if k > 1:
@@ -279,7 +294,9 @@ class CheatApp(HydraHeadApp):
                         st.write("Chargement des résultats...")
                         st.write("\nTentative %i:" % attempt)
                         st.write(qc.draw(output='mpl'))
+                        #print(qc.draw())
                         st.write(plot_histogram(counts))
+                        print(counts)
 
                         st.write("P et Q trouvé avec l'ordinateur quantique : ")
                         st.write('N = ', Q, ' x ', P)
@@ -292,10 +309,12 @@ class CheatApp(HydraHeadApp):
                         elapsed_time_secs = time.time() - start_time
                         msg_time = "L'exécution a pris : %s" % timedelta(seconds=round(elapsed_time_secs))
                         st.write(msg_time)
-                except:
-                    st.write("Pas assez de qubits !")
+                except Exception as e:
+                    st.write(f"An error occurred: {str(e)}")
                     st.write("Arrêt en cours...")
                     break
-        if len(msg_ssl)>0 and is_prime(p) and is_prime(q) :
+
+        if len(msg_ssl)>0:
             if st.button("Démarrer l'algorithme"):
+                stop_button = st.button("Arrêter le calcul")
                 run_shor()
