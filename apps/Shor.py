@@ -6,7 +6,7 @@ from hydralit import HydraHeadApp
 from pathlib import Path
 import streamlit as st
 import base64
-
+import sys
 # imports for Quantum part
 from qiskit.visualization import plot_histogram
 from qiskit import QuantumCircuit, Aer, execute
@@ -233,6 +233,7 @@ class CheatApp(HydraHeadApp):
             start_time = time.time()
             factor_found = False
             attempt = 0
+            stop_button = st.button("Arrêter le calcul")
             st.write("Chargement...", end='\t')
             st.write("Connexion à l'ordinateur quantique...", end='\t')
             st.write("Calcul...", end='\t')
@@ -240,6 +241,7 @@ class CheatApp(HydraHeadApp):
             while not factor_found:
                 if stop_button:
                     st.write("Calcul arrêté.")
+                    sys.exit()
                     break
                 try :
                     #n = math.ceil(math.log2(N))
@@ -316,5 +318,4 @@ class CheatApp(HydraHeadApp):
 
         if len(msg_ssl)>0:
             if st.button("Démarrer l'algorithme"):
-                stop_button = st.button("Arrêter le calcul")
                 run_shor()
