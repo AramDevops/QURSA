@@ -7,6 +7,8 @@ from pathlib import Path
 import streamlit as st
 import base64
 import sys
+from tabulate import tabulate
+
 # imports for Quantum part
 from qiskit.visualization import plot_histogram
 from qiskit import QuantumCircuit, Aer, execute
@@ -14,10 +16,13 @@ from qiskit.circuit.library import QFT
 
 #imports for Classical part
 from datetime import timedelta
+from fractions import Fraction
 from sympy import sieve
+import pandas as pd
 import random
 import math
 import time
+
 
 from qiskit import IBMQ
 
@@ -105,6 +110,9 @@ class CheatApp(HydraHeadApp):
         target_qubits = st.sidebar.number_input("Qubits cibles :", min_value=2, max_value=7, value=5,
                                                 key="target_qubits")
 
+        fraction_accuracy = st.sidebar.number_input("Precision de la Fraction :", min_value=1, value=20,
+                                                  key="fraction_accuracy")
+
         # Display the selected or entered number
         st.markdown("Vous avez sélectionné : ")
         if option == "Insérer les nombres premiers P & Q":
@@ -130,7 +138,8 @@ class CheatApp(HydraHeadApp):
 
         def value_a(N):
             while True:
-                a = random.randrange(2, N)  # Start from N//2 and increment by 2
+                a = random.randrange(N//2, N)
+                # Start from N//2 and increment by 2
                 if math.gcd(a, N) == 1:
                     return a
 
@@ -152,7 +161,7 @@ class CheatApp(HydraHeadApp):
             return c_U
 
         def modular_exponentiation(qc, n, m, a):
-            c_modN_values = [c_modN(a, k**2) for k in range(n)]  # Precompute c_modN values
+            c_modN_values = [c_modN(a, k) for k in range(n)]  # Precompute c_modN values
 
             for k, c_modN_value in enumerate(c_modN_values):
                 if k > 0:
@@ -164,6 +173,7 @@ class CheatApp(HydraHeadApp):
                           do_swaps=False).inverse(),
                       measurement_qubits)
             qc.name = "QFT†"
+
 
         def measure(qc, n):
             qc.measure(n, n)
@@ -204,7 +214,7 @@ class CheatApp(HydraHeadApp):
             qc.barrier()
 
             # apply error correction
-            #error_correction(qc, n)
+            error_correction(qc, n)
 
             # apply inverse QFT
             qft_dagger(qc, range(n))
@@ -262,38 +272,48 @@ class CheatApp(HydraHeadApp):
                                          for measured_value in counts])
 
                     factors = set()
+                    target_period = 0
 
-                    for measured_value in counts_dec:
+                    rows, measured_phases = [], []
+                    for output in counts:
+                        decimal = int(output, 2)  # convert binary numbers to decimal
+                        phase = decimal / (2 ** controll_qubits)  # find eigenvalues
+                        measured_phases.append(phase)
 
-                        guesses = [math.gcd(int((a ** (measured_value / 2))) + 1, N),
-                                   math.gcd(int((a ** (measured_value / 2))) - 1, N)]
+                    for phase in measured_phases:
+                        frac = Fraction(phase).limit_denominator(fraction_accuracy)
+                        rows.append([phase, "%i/%i" % (frac.numerator, frac.denominator), frac.denominator])
+                        guesses = [
+                            math.gcd(int((a ** int(frac.denominator))) + 1, N),
+                            math.gcd(int((a ** int(frac.denominator))) - 1, N)
+                        ]
 
                         for guess in guesses:
-                            # ignore trivial factors
+                            # Ignore trivial factors
                             if guess != 1 and guess != N and N % guess == 0:
                                 factors.add(guess)
-                                # Print the value of r
-                                r = measured_value / 2
-                                st.write('La valeur de la période "r" est:', {r})
-                                f = math.gcd(int((a ** (measured_value / 2))) + 1, N)
-                                k = math.gcd(int((a ** (measured_value / 2))) - 1, N)
-                                st.write('On teste les deux formules pour trouver les facteurs avec:')
-                                st.write('N_1 = gcd(' , a , '^(', r ,'/2) + 1, ', N ,') ')
-                                st.write('N_2 = gcd(' , a , '^(', r ,'/2) - 1, ', N ,') ')
-
-                                if f > 1:
-                                    st.write(f'Le facteur trouvé avec gcd(' , a , '^(', r ,'/2) + 1, ', N ,') = ',{f})
-                                if k > 1:
-                                    st.write(f'Le facteur trouvé avec gcd(' , a , '^(', r ,'/2) - 1, ', N ,') = ',{k})
-
+                                target_period = int(frac.denominator)
                                 factor_found = True
 
-                    if len(factors)!=0:
+                    df = pd.DataFrame(rows, columns=["Phase", "Fraction", "Guess for r"])
+                    #print(df)
 
+                    if len(factors)!=0:
+                        r = target_period
                         P = factors.pop()
                         Q = factors.pop() if len(factors) else N // P
 
                         st.write("Chargement des résultats...")
+                        st.write(df)
+                        st.write('La valeur de la période "r" est:', {r})
+                        st.write('On teste les deux formules pour trouver les facteurs avec:')
+                        st.write('N_1 = gcd(', a, '^(', r, '/2) + 1, ', N, ') ')
+                        st.write('N_2 = gcd(', a, '^(', r, '/2) - 1, ', N, ') ')
+                        if P > 1:
+                            st.write(f'Le facteur trouvé avec gcd(', a, '^(', r, '/2) + 1, ', N, ') = ', {P})
+                        if Q > 1:
+                            st.write(f'Le facteur trouvé avec gcd(', a, '^(', r, '/2) - 1, ', N, ') = ', {Q})
+
                         st.write("\nTentative %i:" % attempt)
                         st.write(qc.draw(output='mpl'))
                         #print(qc.draw())
