@@ -137,8 +137,7 @@ class CheatApp(HydraHeadApp):
 
         def value_a(N):
             while True:
-                a = random.randrange(N//2, N)
-                # Start from N//2 and increment by 2
+                a = random.randrange(-2, N-1) # N//2 optional
                 if math.gcd(a, N) == 1:
                     return a
 
