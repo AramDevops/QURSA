@@ -103,10 +103,10 @@ class CheatApp(HydraHeadApp):
                 st.sidebar.error("Q doit être un nombre premier")
 
         st.sidebar.markdown("Nombre de Qubits :")
-        controll_qubits = st.sidebar.number_input("Qubits de Contrôle :", min_value=2, max_value=7, value=5,
+        controll_qubits = st.sidebar.number_input("Qubits de Contrôle :", min_value=2, value=5,
                                                   key="controll_qubits")
 
-        target_qubits = st.sidebar.number_input("Qubits cibles :", min_value=2, max_value=7, value=5,
+        target_qubits = st.sidebar.number_input("Qubits cibles :", min_value=2, value=5,
                                                 key="target_qubits")
 
         fraction_accuracy = st.sidebar.number_input("Precision de la Fraction :", min_value=1, value=20,
