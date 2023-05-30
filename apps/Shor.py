@@ -7,7 +7,6 @@ from pathlib import Path
 import streamlit as st
 import base64
 import sys
-from tabulate import tabulate
 
 # imports for Quantum part
 from qiskit.visualization import plot_histogram
