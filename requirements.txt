@@ -6,4 +6,5 @@ qiskit
 rsa
 streamlit
 pylatexenc
+pandas
 sympy
