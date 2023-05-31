@@ -19,9 +19,6 @@ class LoaderTestApp(HydraHeadApp):
     def run(self):
 
         global msg_ssl
-        st.markdown(
-            "<center><img style='margin-top:-250px; width:15%'src='https://media0.giphy.com/media/3oeHLhzRkRX1bQQBPi/giphy.gif?cid=ecf05e47s49gr7b0g2dlobjw3c19zmiz45mu0m1vndxmtmkl&rid=giphy.gif&ct=g'></center>",
-            unsafe_allow_html=True)
 
         st.markdown("""
                            <style>
@@ -38,7 +35,7 @@ class LoaderTestApp(HydraHeadApp):
                            }
                             .small-font {
                                font-size:17px !important;
-                               color:#F88379;
+                               color:#ff5400;
                            }
                             .formul-font {
                                color:#00FFFF;
@@ -53,11 +50,6 @@ class LoaderTestApp(HydraHeadApp):
 
         try:
             if True:
-
-                # generate public and private keys with
-                # rsa.newkeys method,this method accepts
-                # key length as its parameter
-                # key length should be atleast 16
                 import rsa
                 st.markdown("<div id='linkto_top'></div>", unsafe_allow_html=True)
                 html(
@@ -67,7 +59,7 @@ class LoaderTestApp(HydraHeadApp):
                 with st.sidebar:
 
                     st.markdown(
-                        "<a style='text-decoration: none; color:#F88379' href='#prime'>★ Les nombres premiers : </a>",
+                        "<a style='text-decoration: none; color:#ff5400' href='#prime'>★ Les nombres premiers : </a>",
                         unsafe_allow_html=True)
 
                     z = 1000
@@ -83,7 +75,7 @@ class LoaderTestApp(HydraHeadApp):
                                         step=1))
                     st.write(" ")
                     st.markdown(
-                        "<a style='text-decoration: none; color:#F88379' href='#keygenauto'>★ Veuillez saisir la taille de votre clef :</a>",
+                        "<a style='text-decoration: none; color:#ff5400' href='#keygenauto'>★ Veuillez saisir la taille de votre clef :</a>",
                         unsafe_allow_html=True)
 
                     st.write("Générateur automatique")
@@ -94,7 +86,7 @@ class LoaderTestApp(HydraHeadApp):
                     st.write(" ")
 
                     st.markdown(
-                        "<a style='text-decoration: none; color:#F88379' href='#keygenmanu'>★ Veuillez saisir les valeur Q et P :</a>",
+                        "<a style='text-decoration: none; color:#ff5400' href='#keygenmanu'>★ Veuillez saisir les valeur Q et P :</a>",
                         unsafe_allow_html=True)
                     st.write("Générateur manuelle")
 
@@ -247,8 +239,19 @@ class LoaderTestApp(HydraHeadApp):
                         unsafe_allow_html=True
                     )
                     publicKey, privateKey = (rsa.newkeys(rsa_size))
-                    st.write(f'Ceci est la clef publique RSA, Taille({rsa_size}) : (N,e)', publicKey)
-                    st.write(f'Ceci est la clef privée RSA, Taille({rsa_size}) : (N,e,d,P,Q)', privateKey)
+                    st.write(f'Ceci est la clef publique RSA, Taille({rsa_size}) : (N,e)')
+
+                    st.write("N =", publicKey.n)
+                    st.write("e =", publicKey.e)
+
+                    st.write(f'Ceci est la clef privée RSA, Taille({rsa_size}) : (d)')
+
+                    st.write("d =", privateKey.d)
+
+                    st.write('Ceci est les deux nombres premiers p et q :')
+
+                    st.write("p =", privateKey.p)
+                    st.write("q =", privateKey.q)
 
                     st.markdown("<div id='keygenmanu'></div>", unsafe_allow_html=True)
 
