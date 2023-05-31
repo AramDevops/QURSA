@@ -104,7 +104,7 @@ class CheatApp(HydraHeadApp):
         st.sidebar.markdown("Vous connaisez la valeur de a ?")
 
         a_option = st.sidebar.radio("Choisissez une option :",
-                                    ("Oui", "Non"))
+                                    ("Non", "Oui"))
         if a_option == "Oui":
             a_value = st.sidebar.number_input("Valeur de a :", min_value=1, value=7,
                                               key="fraction_accuracy")
