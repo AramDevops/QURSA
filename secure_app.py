@@ -15,8 +15,6 @@ import hydralit_components as hc
 #Only need to set these here as we are add controls outside of Hydralit, to customise a run Hydralit!
 st.set_page_config(page_title='QURSA',page_icon="⚛",layout='wide',initial_sidebar_state='auto',)
 
-
-
 if __name__ == '__main__':
 
     #---ONLY HERE TO SHOW OPTIONS WITH HYDRALIT - NOT REQUIRED, use Hydralit constructor parameters.
@@ -46,7 +44,7 @@ if __name__ == '__main__':
     #add all your application classes here
     app.add_app("RSA Algorithm", icon="🔑🔓︎", app=apps.LoaderTestApp(title="RSA Algorithm"))
 
-    app.add_app("Shor algorithm (polynomial time)", icon="🔱", app=apps.CheatApp(title="Shor algorithm (polynomial time)"))
+    app.add_app("Shor algorithm", icon="🔱", app=apps.CheatApp(title="Shor Algorithm"))
 
     #app.add_app("Future options 2...", icon="⌨", app=apps.UberNYC(title="Future options 2..."))
     #app.add_app("Future options 3...", icon="⌨", app=apps.SpacyNLP(title="Future options 3..."))
@@ -89,17 +87,14 @@ if __name__ == '__main__':
         complex_nav = {
             'Home': ['Home'],
             'RSA Algorithm': ['RSA Algorithm'],
-            'Factorisation Algorithms': ['Shor algorithm (polynomial time)',"Classical algorithm (exponential time)"],
-            #'Future options 2...': ["Future options 2..."],
-            #'NLP': ["Future options 3..."],
-            #'Cookie Cutter': ['Cookie Cutter']
+            'Shor algorithm': ['Shor algorithm'],
+
         }
     elif user_access_level == 1:
         complex_nav = {
             'Home': ['Home'],
             'RSA Algorithm': ['RSA Algorithm'],
-            'Factorisation Algorithms': ['Shor algorithm (polynomial time)'],
-                          #['Shor algorithm (polynomial time)', "Classical algorithm (exponential time)"],
+            'Shor algorithm': ['Shor algorithm'],
 
             #'Future options 2...': ["Future options 2..."],
             #'NLP': ["Future options 3..."],
@@ -110,10 +105,8 @@ if __name__ == '__main__':
             'Home': ['Home'],
         }
 
-
     #and finally just the entire app and all the children.
     app.run(complex_nav)
-
 
     #print user movements and current login details used by Hydralit
     #---------------------------------------------------------------------
