@@ -38,7 +38,7 @@ def img_to_bytes(img_path):
 
 class CheatApp(HydraHeadApp):
 
-    def __init__(self, title='', **kwargs):
+    def __init__(self, title='Shor', **kwargs):
         self.__dict__.update(kwargs)
         self.title = title
 
@@ -60,10 +60,6 @@ class CheatApp(HydraHeadApp):
                 border-radius: 20px;
             }
             </style>""", unsafe_allow_html=True)
-
-        st.markdown(
-            "<center><img style='margin-top:-200px; width:15%'src='https://i.gifer.com/VIcR.gif'></center>",
-            unsafe_allow_html=True)
 
         def generate_primes(start, end):
             # Use a sieve algorithm to generate a list of prime numbers in the specified range
@@ -101,9 +97,7 @@ class CheatApp(HydraHeadApp):
             if not is_prime(q):
                 st.sidebar.error("Q doit être un nombre premier")
 
-        st.sidebar.markdown("Vous connaisez la valeur de a ?")
-
-        a_option = st.sidebar.radio("Choisissez une option :",
+        a_option = st.sidebar.radio("Vous connaisez la valeur de a ? :",
                                     ("Non", "Oui"))
         if a_option == "Oui":
             a_value = st.sidebar.number_input("Valeur de a :", min_value=1, value=7,
@@ -128,6 +122,67 @@ class CheatApp(HydraHeadApp):
         fraction_accuracy = st.sidebar.number_input("Precision de la Fraction :", min_value=1, value=20,
 
                                                   key="fraction_accuracy")
+        qpc_option = st.sidebar.radio("Veuillez sélectionner l'option d'exécution : ",
+                                      ("Ordinateur quantique (Simulateur)", "Ordinateur quantique"))
+
+        # Get the provider and backends
+        provider = IBMQ.get_provider('ibm-q')
+        backends = provider.backends()
+
+        if qpc_option == "Ordinateur quantique (Simulateur)":
+            simulators = [backend for backend in backends if backend.configuration().simulator]
+
+            # Dropdown selection for simulator
+            simulator_selection = st.sidebar.selectbox(
+                'Sélectionnez un ordinateur:',
+                [f"{sim.name()} (Qubits: {sim.configuration().n_qubits})" for sim in simulators]
+            )
+
+            # Get the maximum qubits for the selected simulator
+            simulator_max_qubits = next(
+                sim.configuration().n_qubits for sim in simulators if sim.name() == simulator_selection.split(" ")[0]
+            )
+            pc_name = simulator_selection.split(' ')[0]
+
+            if pc_name ==  "ibmq_qasm_simulator":
+                pc_name = "qasm_simulator"
+
+            backend = Aer.get_backend(pc_name)
+
+            # Display the selected options
+            st.sidebar.write(f"Ordinateur: {pc_name}")
+            st.sidebar.write(f"Qubits: {simulator_max_qubits}")
+
+
+        elif qpc_option == "Ordinateur quantique":
+
+            api_val = st.sidebar.text_input("Veuillez insérer votre clé API :")
+            if api_val != '':
+
+                IBMQ.save_account(f'{api_val}')
+                IBMQ.load_account()
+
+                real_quantum_computers = [backend for backend in backends if not backend.configuration().simulator]
+
+                # Dropdown selection for simulators
+                real_qc_selection = st.sidebar.selectbox(
+                    'Sélectionnez un ordinateur:',
+                    [f"{sim.name()} (Qubits: {sim.configuration().n_qubits})" for sim in real_quantum_computers]
+                )
+
+                # Get the maximum qubits for the selected simulator
+                real_qc_max_qubits = next(
+                    sim.configuration().n_qubits for sim in real_quantum_computers if
+                    sim.name() == real_qc_selection.split(" ")[0]
+                )
+
+                pc_name = real_qc_selection.split(' ')[0]
+
+                backend = provider.get_backend(pc_name)
+
+                # Display the selected options
+                st.sidebar.write(f"Ordinateur: {pc_name}")
+                st.sidebar.write(f"Qubits: {real_qc_max_qubits}")
 
         # Display the selected or entered number
         st.markdown("Vous avez sélectionné : ")
@@ -272,20 +327,15 @@ class CheatApp(HydraHeadApp):
                         a = value_a(N)
                     qc = period_finder(controll_qubits, target_qubits, a)
 
-                    simulator = Aer.get_backend('qasm_simulator')
-                    counts = execute(qc, backend=simulator).result().get_counts(qc)
-
-                    #st.write(counts)
-
-                    #counts = execute(qc, backend=backend).result().get_counts(qc)
+                    counts = execute(qc, backend=backend).result().get_counts(qc)
 
                     # convert and add binary periods to list
-                    counts_dec = sorted([int(measured_value[::-1], 2)
-                                         for measured_value in counts])
-
+                    #counts_dec = sorted([int(measured_value[::-1], 2)
+                                         #for measured_value in counts])
                     factors = set()
                     target_period = 0
 
+                    # Continuous Fraction Part
                     rows, measured_phases = [], []
                     for output in counts:
                         decimal = int(output, 2)  # convert binary numbers to decimal
