@@ -25,7 +25,7 @@ import time
 
 from qiskit import IBMQ
 
-#IBMQ.save_account('25ec632a10279f5d4a7deb00aaf8b96f03a5351d0942fd8b3825d13419faf79529d6a1a2032475d437a3dbbfdfb120fc7edd383f7746784f7fab096704f0057e')
+IBMQ.save_account('25ec632a10279f5d4a7deb00aaf8b96f03a5351d0942fd8b3825d13419faf79529d6a1a2032475d437a3dbbfdfb120fc7edd383f7746784f7fab096704f0057e')
 
 #IBMQ.load_account()
 #provider = IBMQ.get_provider('ibm-q')
@@ -125,62 +125,60 @@ class CheatApp(HydraHeadApp):
         qpc_option = st.sidebar.radio("Veuillez sélectionner l'option d'exécution : ",
                                       ("Ordinateur quantique (Simulateur)", "Ordinateur quantique"))
 
-        # Get the provider and backends
-        provider = IBMQ.get_provider('ibm-q')
-        backends = provider.backends()
+        api_val = st.sidebar.text_input("Veuillez insérer votre clé API :")
+        if api_val != '':
+            IBMQ.save_account(f'{api_val}')
+            IBMQ.load_account()
+            # Get the provider and backends
+            provider = IBMQ.get_provider('ibm-q')
+            backends = provider.backends()
 
-        if qpc_option == "Ordinateur quantique (Simulateur)":
-            simulators = [backend for backend in backends if backend.configuration().simulator]
+            if qpc_option == "Ordinateur quantique (Simulateur)":
+                simulators = [backend for backend in backends if backend.configuration().simulator]
 
-            # Dropdown selection for simulator
-            simulator_selection = st.sidebar.selectbox(
-                'Sélectionnez un ordinateur:',
-                [f"{sim.name()} (Qubits: {sim.configuration().n_qubits})" for sim in simulators]
-            )
-
-            # Get the maximum qubits for the selected simulator
-            simulator_max_qubits = next(
-                sim.configuration().n_qubits for sim in simulators if sim.name() == simulator_selection.split(" ")[0]
-            )
-            pc_name = simulator_selection.split(' ')[0]
-
-            if pc_name ==  "ibmq_qasm_simulator":
-                pc_name = "qasm_simulator"
-
-            backend = Aer.get_backend(pc_name)
-
-            # Display the selected options
-            st.sidebar.write(f"Ordinateur: {pc_name}")
-            st.sidebar.write(f"Qubits: {simulator_max_qubits}")
-
-
-        elif qpc_option == "Ordinateur quantique":
-
-            api_val = st.sidebar.text_input("Veuillez insérer votre clé API :")
-            if api_val != '':
-
-                IBMQ.save_account(f'{api_val}')
-                IBMQ.load_account()
-
-                real_quantum_computers = [backend for backend in backends if not backend.configuration().simulator]
-
-                # Dropdown selection for simulators
-                real_qc_selection = st.sidebar.selectbox(
+                # Dropdown selection for simulator
+                simulator_selection = st.sidebar.selectbox(
                     'Sélectionnez un ordinateur:',
-                    [f"{sim.name()} (Qubits: {sim.configuration().n_qubits})" for sim in real_quantum_computers]
+                    [f"{sim.name()} (Qubits: {sim.configuration().n_qubits})" for sim in simulators]
                 )
 
                 # Get the maximum qubits for the selected simulator
-                real_qc_max_qubits = next(
-                    sim.configuration().n_qubits for sim in real_quantum_computers if
-                    sim.name() == real_qc_selection.split(" ")[0]
+                simulator_max_qubits = next(
+                    sim.configuration().n_qubits for sim in simulators if sim.name() == simulator_selection.split(" ")[0]
                 )
+                pc_name = simulator_selection.split(' ')[0]
+
+                if pc_name ==  "ibmq_qasm_simulator":
+                    pc_name = "qasm_simulator"
+
+                backend = Aer.get_backend(pc_name)
+
+                # Display the selected options
+                st.sidebar.write(f"Ordinateur: {pc_name}")
+                st.sidebar.write(f"Qubits: {simulator_max_qubits}")
+
+
+            elif qpc_option == "Ordinateur quantique":
+
+                real_quantum_computers = [backend for backend in backends if not backend.configuration().simulator]
+
+                    # Dropdown selection for simulators
+                real_qc_selection = st.sidebar.selectbox(
+                        'Sélectionnez un ordinateur:',
+                        [f"{sim.name()} (Qubits: {sim.configuration().n_qubits})" for sim in real_quantum_computers]
+                    )
+
+                    # Get the maximum qubits for the selected simulator
+                real_qc_max_qubits = next(
+                        sim.configuration().n_qubits for sim in real_quantum_computers if
+                        sim.name() == real_qc_selection.split(" ")[0]
+                    )
 
                 pc_name = real_qc_selection.split(' ')[0]
 
                 backend = provider.get_backend(pc_name)
 
-                # Display the selected options
+                    # Display the selected options
                 st.sidebar.write(f"Ordinateur: {pc_name}")
                 st.sidebar.write(f"Qubits: {real_qc_max_qubits}")
 
