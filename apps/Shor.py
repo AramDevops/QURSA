@@ -46,13 +46,13 @@ class CheatApp(HydraHeadApp):
 
         st.markdown("""
             <style>
-            .css-1kyxreq.etr89bj2 .css-1v0mbdj.etr89bj1 {
+            .element-container.css-1e5imcs.e1tzin5v1 .css-1v0mbdj.etr89bj1 {
                 display: flex;
                 justify-content: center;
                 align-items: center;
             }
 
-            .css-1kyxreq.etr89bj2 .css-1v0mbdj.etr89bj1 img {
+            .element-container.css-1e5imcs.e1tzin5v1 .css-1v0mbdj.etr89bj1 img {
                 max-height: 100%;
                 width: auto;
                 border: 2px solid #fff;
