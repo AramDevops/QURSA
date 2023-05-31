@@ -107,7 +107,7 @@ class CheatApp(HydraHeadApp):
                                     ("Non", "Oui"))
         if a_option == "Oui":
             a_value = st.sidebar.number_input("Valeur de a :", min_value=1, value=7,
-                                              key="fraction_accuracy")
+                                              key="a_value_user")
         elif a_option == "Non":
             st.sidebar.markdown("La valeur de 'a' va être aléatoire !")
 
