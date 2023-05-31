@@ -46,21 +46,20 @@ class CheatApp(HydraHeadApp):
 
         st.markdown("""
             <style>
-            .css-1v0mbdj.etr89bj1  img {
-            -ms-transform: scale(0.7);
-            -webkit-transform: scale(0.5);
-            -o-transform: scale(0.5);
-            -moz-transform: scale(0.5);
-            transform: scale(0.5);
-            border: 2px solid #fff;
-            box-shadow: 10px 10px 5px  rgb(38, 255, 4);
-            -moz-box-shadow: 10px 10px 5px  rgb(38, 255, 4);
-            -webkit-box-shadow: 10px 10px 5px  rgb(38, 255, 4);
-            -khtml-box-shadow: 10px 10px 5px  rgb(38, 255, 4);
-            margin-top: -10%;
-            margin-bottom: -15%;
-            border-radius: 20px;}
-            </style>""" , unsafe_allow_html=True)
+            .css-1kyxreq.etr89bj0 .css-1v0mbdj.etr89bj1 {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .css-1kyxreq.etr89bj0 .css-1v0mbdj.etr89bj1 img {
+                max-height: 100%;
+                width: auto;
+                border: 2px solid #fff;
+                box-shadow: 10px 10px 5px rgb(38, 255, 4);
+                border-radius: 20px;
+            }
+            </style>""", unsafe_allow_html=True)
 
         st.markdown(
             "<center><img style='margin-top:-200px; width:15%'src='https://i.gifer.com/VIcR.gif'></center>",
@@ -102,6 +101,23 @@ class CheatApp(HydraHeadApp):
             if not is_prime(q):
                 st.sidebar.error("Q doit être un nombre premier")
 
+        st.sidebar.markdown("Vous connaisez la valeur de a ?")
+
+        a_option = st.sidebar.radio("Choisissez une option :",
+                                    ("Oui", "Non"))
+        if a_option == "Oui":
+            a_value = st.sidebar.number_input("Valeur de a :", min_value=1, value=7,
+                                              key="fraction_accuracy")
+        elif a_option == "Non":
+            st.sidebar.markdown("La valeur de 'a' va être aléatoire !")
+
+            def value_a(N):
+                while True:
+                    a = random.randrange(N // 2, N - 1)
+                    # Start from N//2 and increment by 2
+                    if math.gcd(a, N) == 1:
+                        return a
+
         st.sidebar.markdown("Nombre de Qubits :")
         controll_qubits = st.sidebar.number_input("Qubits de Contrôle :", min_value=2, value=5,
                                                   key="controll_qubits")
@@ -110,6 +126,7 @@ class CheatApp(HydraHeadApp):
                                                 key="target_qubits")
 
         fraction_accuracy = st.sidebar.number_input("Precision de la Fraction :", min_value=1, value=20,
+
                                                   key="fraction_accuracy")
 
         # Display the selected or entered number
@@ -134,12 +151,6 @@ class CheatApp(HydraHeadApp):
 
         msg_ssl = Crypter((65537, N), message)
         st.write(f"Le message chiffré avec la clé publique : {msg_ssl}")
-
-        def value_a(N):
-            while True:
-                a = random.randrange(-2, N-1) # N//2 optional
-                if math.gcd(a, N) == 1:
-                    return a
 
         def initialize_qubits(qc, n, m):
             qc.h(range(n))  # apply hadamard gates
@@ -255,7 +266,10 @@ class CheatApp(HydraHeadApp):
                     #n = math.ceil(math.log2(N))
                     #m = n + 1
                     attempt += 1
-                    a = value_a(N)
+                    if a_option == "Oui":
+                        a = a_value
+                    else :
+                        a = value_a(N)
                     qc = period_finder(controll_qubits, target_qubits, a)
 
                     simulator = Aer.get_backend('qasm_simulator')
