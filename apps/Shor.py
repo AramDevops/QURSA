@@ -10,7 +10,7 @@ import sys
 
 # imports for Quantum part
 from qiskit.visualization import plot_histogram
-from qiskit import QuantumCircuit, Aer, execute
+from qiskit import QuantumCircuit, Aer, execute, IBMQ
 from qiskit.circuit.library import QFT
 
 #imports for Classical part
@@ -22,8 +22,6 @@ import random
 import math
 import time
 
-
-from qiskit import IBMQ
 
 IBMQ.save_account('25ec632a10279f5d4a7deb00aaf8b96f03a5351d0942fd8b3825d13419faf79529d6a1a2032475d437a3dbbfdfb120fc7edd383f7746784f7fab096704f0057e')
 
