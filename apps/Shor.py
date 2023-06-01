@@ -342,8 +342,8 @@ class CheatApp(HydraHeadApp):
                         frac = Fraction(phase).limit_denominator(fraction_accuracy)
                         rows.append([phase, "%i/%i" % (frac.numerator, frac.denominator), frac.denominator])
                         guesses = [
-                            math.gcd(int((a ** int(frac.denominator))) + 1, N),
-                            math.gcd(int((a ** int(frac.denominator))) - 1, N)
+                            math.gcd(int((a ** int(frac.denominator/2))) + 1, N),
+                            math.gcd(int((a ** int(frac.denominator/2))) - 1, N)
                         ]
 
                         for guess in guesses:
