@@ -22,6 +22,16 @@ import random
 import math
 import time
 
+import concurrent.futures
+
+import threading
+
+# Shared variable to indicate if a factor is found
+factor_found = False
+# Lock to synchronize access to the shared variable
+factor_lock = threading.Lock()
+
+p_q_list = []
 
 IBMQ.save_account('25ec632a10279f5d4a7deb00aaf8b96f03a5351d0942fd8b3825d13419faf79529d6a1a2032475d437a3dbbfdfb120fc7edd383f7746784f7fab096704f0057e')
 
@@ -44,13 +54,13 @@ class CheatApp(HydraHeadApp):
 
         st.markdown("""
             <style>
-            .css-1v0mbdj.etr89bj1 {
+            .css-1kyxreq.etr89bj0 .css-1v0mbdj.etr89bj1 {
                 display: flex;
                 justify-content: center;
                 align-items: center;
             }
 
-            .css-1v0mbdj.etr89bj1 img {
+            .css-1kyxreq.etr89bj0 .css-1v0mbdj.etr89bj1 img {
                 max-height: 100%;
                 width: auto;
                 border: 2px solid #fff;
@@ -72,43 +82,59 @@ class CheatApp(HydraHeadApp):
                     return False
             return True
 
+        st.sidebar.title(':blue[Paramètres classique] :zap: :')
+
         option = st.sidebar.radio("Choisissez une option :",
-                                  ("Insérer le nombre N", "Insérer les nombres premiers P & Q"))
+                                  ("Insérer le nombre N", "Insérer les nombres premiers","Génération aléatoire"))
 
         if option == "Insérer le nombre N":
             st.sidebar.markdown("Entrez le nombre N :")
             number_N = st.sidebar.number_input("N :", key="number_N", min_value=15)
             p, q = None, None
 
-        elif option == "Insérer les nombres premiers P & Q":
-            st.sidebar.markdown("Voici des nombres premiers générés aléatoirement avec leurs niveaux de difficulté")
-            st.sidebar.write(f"Très facile : {random.sample(generate_primes(300, 700), 3)}")
-            st.sidebar.write(f"Facile : {random.sample(generate_primes(3000, 7000), 3)}")
-            st.sidebar.write(f"Moyen : {random.sample(generate_primes(30000, 70000), 3)}")
-            st.sidebar.write(f"Moyen/Long : {random.sample(generate_primes(300000, 700000), 3)}")
-
-            st.sidebar.markdown("Entrez les nombres premiers P & Q : ")
-            p = st.sidebar.number_input("P :", key="number_P", min_value=1, value=3)
+        elif option == "Insérer les nombres premiers":
+            st.sidebar.markdown("Entrez les nombres premiers :")
+            p = st.sidebar.number_input("P :", key="number_P", min_value=1, value=5)
             if not is_prime(p):
                 st.sidebar.error("P doit être un nombre premier")
-            q = st.sidebar.number_input("Q :", key="number_Q", min_value=1,value=5)
+            q = st.sidebar.number_input("Q :", key="number_Q", min_value=1,value=3)
             if not is_prime(q):
                 st.sidebar.error("Q doit être un nombre premier")
+
+        elif option == "Génération aléatoire":
+
+            ln = st.sidebar.number_input("Longueur des nombres premiers :", min_value=1, value=2,
+                                             key="primes_gen")
+            def generator(v_ln):
+                range_start = 10 ** (v_ln - 1)
+                range_end = 10 ** v_ln
+                kl = random.sample(generate_primes(range_start, range_end), 2)
+                return kl
+
+            if len(p_q_list) == 0:
+                res_kl = generator(ln)
+                p_q_list.append(res_kl[0])
+                p_q_list.append(res_kl[1])
+
+            if st.sidebar.button("Générer", key="button1"):
+                p_q_list.clear()
+                res_kl = generator(ln)
+                p_q_list.append(res_kl[0])
+                p_q_list.append(res_kl[1])
 
         a_option = st.sidebar.radio("Vous connaisez la valeur de a ? :",
                                     ("Non", "Oui"))
         if a_option == "Oui":
-            a_value = st.sidebar.number_input("Valeur de a :", min_value=1, value=7,
+            global value_a_input, phase
+            value_a_input = st.sidebar.number_input("Valeur de a :", min_value=1, value=7,
                                               key="a_value_user")
         elif a_option == "Non":
             st.sidebar.markdown("La valeur de 'a' va être aléatoire !")
 
-            def value_a(N):
-                while True:
-                    a = random.randrange(N // 2, N - 1)
-                    # Start from N//2 and increment by 2
-                    if math.gcd(a, N) == 1:
-                        return a
+        st.sidebar.title('--------------------------------------')
+
+        st.sidebar.title('Paramètres quantique :hammer_and_wrench: :')
+
 
         st.sidebar.markdown("Nombre de Qubits :")
         controll_qubits = st.sidebar.number_input("Qubits de Contrôle :", min_value=2, value=5,
@@ -117,13 +143,28 @@ class CheatApp(HydraHeadApp):
         target_qubits = st.sidebar.number_input("Qubits cibles :", min_value=2, value=5,
                                                 key="target_qubits")
 
+        st.sidebar.title('--------------------------------------')
+
+        st.sidebar.title("Paramètres d'optimisation :pushpin: :")
+
         fraction_accuracy = st.sidebar.number_input("Precision de la Fraction :", min_value=1, value=20,
 
                                                   key="fraction_accuracy")
+
+        num_instances = st.sidebar.number_input("Processus parallèle :", min_value=1, value=5,
+
+                                                  key="proc_para")
+
+        st.sidebar.title('--------------------------------------')
+
+        st.sidebar.title("Options d'exécution (facultatif) :bow_and_arrow: :")
+
         qpc_option = st.sidebar.radio("Veuillez sélectionner l'option d'exécution : ",
                                       ("Ordinateur quantique (Simulateur)", "Ordinateur quantique"))
 
+
         api_val = st.sidebar.text_input("Veuillez insérer votre clé API :")
+
         if api_val != '':
             IBMQ.save_account(f'{api_val}')
             IBMQ.load_account()
@@ -148,7 +189,10 @@ class CheatApp(HydraHeadApp):
 
                 if pc_name ==  "ibmq_qasm_simulator":
                     pc_name = "qasm_simulator"
+                if pc_name == "simulator_statevector":
+                    pc_name = "statevector_simulator"
 
+                print(pc_name)
                 backend = Aer.get_backend(pc_name)
 
                 # Display the selected options
@@ -176,18 +220,29 @@ class CheatApp(HydraHeadApp):
 
                 backend = provider.get_backend(pc_name)
 
-                    # Display the selected options
+                # Display the selected options
                 st.sidebar.write(f"Ordinateur: {pc_name}")
                 st.sidebar.write(f"Qubits: {real_qc_max_qubits}")
+        else :
+            # Defaults backend
+            backend = Aer.get_backend('qasm_simulator')
 
         # Display the selected or entered number
         st.markdown("Vous avez sélectionné : ")
-        if option == "Insérer les nombres premiers P & Q":
+        if option == "Insérer le nombre N":
+            N = number_N
+
+        elif option == "Génération aléatoire":
+            p = p_q_list[0]
+            q = p_q_list[1]
             st.write("Votre valeur P : ",p)
             st.write("Votre valeur Q : ", q)
             N = p * q
-        else:
-           N = number_N
+
+        else :
+            st.write("Votre valeur P : ",p)
+            st.write("Votre valeur Q : ", q)
+            N = p * q
 
         st.write(f'N : ', N)
 
@@ -202,6 +257,13 @@ class CheatApp(HydraHeadApp):
 
         msg_ssl = Crypter((65537, N), message)
         st.write(f"Le message chiffré avec la clé publique : {msg_ssl}")
+
+        def value_a(N):
+            while True:
+                a = random.randrange(N // 2, N - 1)
+                # Start from N//2 and increment by 2
+                if math.gcd(a, N) == 1:
+                    return a
 
         def initialize_qubits(qc, n, m):
             qc.h(range(n))  # apply hadamard gates
@@ -299,101 +361,128 @@ class CheatApp(HydraHeadApp):
                 t = t + n
             return t
 
-        def run_shor():
+        list_r_val, rows, measured_phases = [], [], []
+
+        a = value_a(N)
+        qc = period_finder(controll_qubits, target_qubits, a)
+        counts = execute(qc, backend=backend).result().get_counts(qc)
+
+        for output in counts:
+            decimal = int(output, 2)  # convert binary numbers to decimal
+            phase = decimal / (2 ** controll_qubits)  # find eigenvalues
+            measured_phases.append(phase)
+
+        for estimated_phase in measured_phases:
+            frac = Fraction(estimated_phase).limit_denominator(fraction_accuracy)
+            rows.append([phase, "%i/%i" % (frac.numerator, frac.denominator), frac.denominator])
+            list_r_val.append(frac.denominator)
+
+        r_simplifier = list(set(list_r_val))
+
+        def p_q_finder(r_sl):
             start_time = time.time()
-            factor_found = False
+            global factor_found, r_val, guesses
             attempt = 0
-            stop_button = st.button("Arrêter le calcul")
+            stop_button = st.button("Arrêter le calcul", key="button2")
             st.write("Chargement...", end='\t')
             st.write("Connexion à l'ordinateur quantique...", end='\t')
             st.write("Calcul...", end='\t')
-
+            print("Calcul...", end='\t')
+            futures = []
             while not factor_found:
                 if stop_button:
                     st.write("Calcul arrêté.")
-                    sys.exit()
-                    break
-                try :
-                    #n = math.ceil(math.log2(N))
-                    #m = n + 1
+                    with factor_lock:
+                        for future in futures:
+                            future.cancel()
+                        break
+                try:
                     attempt += 1
-                    if a_option == "Oui":
-                        a = a_value
-                    else :
-                        a = value_a(N)
-                    qc = period_finder(controll_qubits, target_qubits, a)
-
-                    counts = execute(qc, backend=backend).result().get_counts(qc)
-
-                    # convert and add binary periods to list
-                    #counts_dec = sorted([int(measured_value[::-1], 2)
-                                         #for measured_value in counts])
+                    value_a_input = value_a(N)
+                    # print(f" a = {a}", end='\t')
+                    # print(" ")
                     factors = set()
-                    target_period = 0
-
-                    # Continuous Fraction Part
-                    rows, measured_phases = [], []
-                    for output in counts:
-                        decimal = int(output, 2)  # convert binary numbers to decimal
-                        phase = decimal / (2 ** controll_qubits)  # find eigenvalues
-                        measured_phases.append(phase)
-
-                    for phase in measured_phases:
-                        frac = Fraction(phase).limit_denominator(fraction_accuracy)
-                        rows.append([phase, "%i/%i" % (frac.numerator, frac.denominator), frac.denominator])
+                    for r_val in r_sl:
+                        power_val = int(r_val / 2)
+                        power_result = value_a_input ** power_val
                         guesses = [
-                            math.gcd(int((a ** int(frac.denominator/2))) + 1, N),
-                            math.gcd(int((a ** int(frac.denominator/2))) - 1, N)
+                            math.gcd(power_result + 1, N),
+                            math.gcd(power_result - 1, N)
                         ]
-
-                        for guess in guesses:
-                            # Ignore trivial factors
-                            if guess != 1 and guess != N and N % guess == 0:
-                                factors.add(guess)
-                                target_period = int(frac.denominator)
-                                factor_found = True
-
+                    for guess in guesses:
+                        # Ignore trivial factors
+                        if guess != 1 and guess != N and N % guess == 0:
+                            factors.add(guess)
+                        """ 
+                         print(tabulate(rows,
+                                                    headers=["Phase", "Fraction", "Guess for r"],
+                                                    colalign=('right', 'right', 'right')))
+                        """
                     df = pd.DataFrame(rows, columns=["Phase", "Fraction", "Guess for r"])
-                    #print(df)
+                    # Initialize futures as an empty list before the if statement
+                    if len(factors) != 0:
+                        with factor_lock:
+                            factor_found = True
+                            P = factors.pop()
+                            Q = factors.pop() if len(factors) else N // P
 
-                    if len(factors)!=0:
-                        r = target_period
-                        P = factors.pop()
-                        Q = factors.pop() if len(factors) else N // P
+                            print("\nTentative %i:" % attempt)
 
-                        st.write("Chargement des résultats...")
-                        st.write(df)
-                        st.write('La valeur de la période "r" est:', {r})
-                        st.write('On teste les deux formules pour trouver les facteurs avec:')
-                        st.write('N_1 = gcd(', a, '^(', r, '/2) + 1, ', N, ') ')
-                        st.write('N_2 = gcd(', a, '^(', r, '/2) - 1, ', N, ') ')
-                        if P > 1:
-                            st.write(f'Le facteur trouvé avec gcd(', a, '^(', r, '/2) + 1, ', N, ') = ', {P})
-                        if Q > 1:
-                            st.write(f'Le facteur trouvé avec gcd(', a, '^(', r, '/2) - 1, ', N, ') = ', {Q})
+                            st.write("Chargement des résultats...")
+                            st.write(df)
+                            st.write('La valeur de la période "r" est:', {r_val})
+                            st.write('On teste les deux formules pour trouver les facteurs avec:')
+                            st.write('N_1 = gcd(', value_a_input, '^(', r_val, '/2) + 1, ', N, ') ')
 
-                        st.write("\nTentative %i:" % attempt)
-                        st.write(qc.draw(output='mpl'))
-                        #print(qc.draw())
-                        st.write(plot_histogram(counts))
-                        print(counts)
+                            st.write('N_2 = gcd(', value_a_input, '^(', r_val, '/2) - 1, ', N, ') ')
 
-                        st.write("P et Q trouvé avec l'ordinateur quantique : ")
-                        st.write('N = ', Q, ' x ', P)
+                            if P > 1:
+                                st.write(f'Le facteur trouvé avec gcd(', value_a_input, '^(', r_val, '/2) + 1, ', N, ') = ', {P})
+                                if Q > 1:
+                                    st.write(f'Le facteur manquant est N //', P, '=', Q)
+                            elif Q > 1:
+                                st.write(f'Le facteur trouvé avec gcd(', value_a_input, '^(', r_val, '/2) - 1, ', N, ') = ', {Q})
+                                if P > 1:
+                                    st.write(f'Le facteur manquant est N //', Q, '=', P)
+                            else:
+                                st.write('Aucun facteur trouvé.')
+                            print("-------------------------------------------")
+                            l_qc = period_finder(controll_qubits, target_qubits, value_a_input)
+                            st.write("\nTentative %i:" % attempt)
+                            st.write(l_qc.draw(output='mpl'))
+                            st.write(plot_histogram(counts))
 
-                        phi = (P - 1) * (Q - 1)
-                        cle_p = Modular_multiplicative_inverse(65537, phi)
-                        st.write("La clé privée trouvée : ")
-                        st.write('d = ', cle_p)
+                            print(counts)
 
-                        elapsed_time_secs = time.time() - start_time
-                        msg_time = "L'exécution a pris : %s" % timedelta(seconds=round(elapsed_time_secs))
-                        st.write(msg_time)
+                            st.write("P et Q trouvé avec l'ordinateur quantique : ")
+                            st.write('N = ', Q, ' x ', P)
+
+                            phi = (P - 1) * (Q - 1)
+                            cle_p = Modular_multiplicative_inverse(65537, phi)
+                            st.write("La clé privée trouvée : ")
+                            st.write('d = ', cle_p)
+
+                            elapsed_time_secs = time.time() - start_time
+                            msg_time = "L'exécution a pris : %s" % timedelta(seconds=round(elapsed_time_secs))
+                            st.write(msg_time)
+
+                        for future in futures:
+                            future.cancel()
+                        break
+
                 except Exception as e:
                     st.write(f"An error occurred: {str(e)}")
                     st.write("Arrêt en cours...")
                     break
 
         if len(msg_ssl)>0:
-            if st.button("Démarrer l'algorithme"):
-                run_shor()
+            runner = st.button("Démarrer l'algorithme", key="button3")
+            if runner:
+
+                # Create a ThreadPoolExecutor with the desired number of workers
+                executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_instances)
+
+                # Submit the function multiple times to the executor
+                futures = [executor.submit(p_q_finder(r_simplifier)) for _ in range(num_instances)]
+
+                concurrent.futures.wait(futures)
