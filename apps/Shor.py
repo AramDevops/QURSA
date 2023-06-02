@@ -89,7 +89,8 @@ class CheatApp(HydraHeadApp):
 
         if option == "Insérer le nombre N":
             st.sidebar.markdown("Entrez le nombre N :")
-            number_N = st.sidebar.number_input("N :", key="number_N", min_value=15)
+            number_N = st.sidebar.text_input("N :", key="number_N")
+            N = number_N
             p, q = None, None
 
         elif option == "Insérer les nombres premiers":
@@ -125,7 +126,6 @@ class CheatApp(HydraHeadApp):
         a_option = st.sidebar.radio("Vous connaisez la valeur de a ? :",
                                     ("Non", "Oui"))
         if a_option == "Oui":
-            global value_a_input, phase
             value_a_input = st.sidebar.number_input("Valeur de a :", min_value=1, value=7,
                                               key="a_value_user")
         elif a_option == "Non":
@@ -228,9 +228,14 @@ class CheatApp(HydraHeadApp):
             backend = Aer.get_backend('qasm_simulator')
 
         # Display the selected or entered number
-        st.markdown("Vous avez sélectionné : ")
+
         if option == "Insérer le nombre N":
-            N = number_N
+            try:
+                N = int(N)
+            except:
+                st.write("Veuillez insérer un entier !")
+                st.write("Valeur par défaut du système :")
+                N = 15
 
         elif option == "Génération aléatoire":
             p = p_q_list[0]
@@ -252,10 +257,11 @@ class CheatApp(HydraHeadApp):
 
         def Crypter(clef_publique, mon_message):
             key, n = clef_publique
-            msg_chiffre = [(ord(char) ** key) % n for char in message]
+            msg_chiffre = [(ord(char) ** key) % n for char in mon_message]
             return msg_chiffre
 
         msg_ssl = Crypter((65537, N), message)
+
         st.write(f"Le message chiffré avec la clé publique : {msg_ssl}")
 
         def value_a(N):
@@ -379,16 +385,12 @@ class CheatApp(HydraHeadApp):
 
         r_simplifier = list(set(list_r_val))
 
+        futures = []
+
         def p_q_finder(r_sl):
             start_time = time.time()
             global factor_found, r_val, guesses
             attempt = 0
-            stop_button = st.button("Arrêter le calcul", key="button2")
-            st.write("Chargement...", end='\t')
-            st.write("Connexion à l'ordinateur quantique...", end='\t')
-            st.write("Calcul...", end='\t')
-            print("Calcul...", end='\t')
-            futures = []
             while not factor_found:
                 if stop_button:
                     st.write("Calcul arrêté.")
@@ -476,9 +478,12 @@ class CheatApp(HydraHeadApp):
                     break
 
         if len(msg_ssl)>0:
-            runner = st.button("Démarrer l'algorithme", key="button3")
-            if runner:
-
+            if st.button("Démarrer l'algorithme", key="button3"):
+                stop_button = st.button("Arrêter le calcul", key="button2")
+                st.write("Chargement...", end='\t')
+                st.write("Connexion à l'ordinateur quantique...", end='\t')
+                st.write("Calcul...", end='\t')
+                print("Calcul...", end='\t')
                 # Create a ThreadPoolExecutor with the desired number of workers
                 executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_instances)
 
