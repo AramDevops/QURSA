@@ -133,7 +133,7 @@ class CheatApp(HydraHeadApp):
 
         st.sidebar.title('--------------------------------------')
 
-        st.sidebar.title(':purple[Paramètres quantique] :hammer_and_wrench: :')
+        st.sidebar.title(':violet[Paramètres quantique] :hammer_and_wrench: :')
 
 
         st.sidebar.markdown("Nombre de Qubits :")
@@ -157,7 +157,7 @@ class CheatApp(HydraHeadApp):
 
         st.sidebar.title('--------------------------------------')
 
-        st.sidebar.title(":yellow[Options d'exécution (facultatif)] :bow_and_arrow: :")
+        st.sidebar.title(":orange[Options d'exécution (facultatif)] :bow_and_arrow: :")
 
         qpc_option = st.sidebar.radio("Veuillez sélectionner l'option d'exécution : ",
                                       ("Ordinateur quantique (Simulateur)", "Ordinateur quantique"))
