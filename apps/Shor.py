@@ -82,7 +82,7 @@ class CheatApp(HydraHeadApp):
                     return False
             return True
 
-        st.sidebar.title(':blue[Paramètres classique] :zap: :')
+        st.sidebar.title(':blue[Paramètres classique] :hammer_and_wrench: :')
 
         option = st.sidebar.radio("Choisissez une option :",
                                   ("Insérer le nombre N", "Insérer les nombres premiers","Génération aléatoire"))
@@ -133,7 +133,7 @@ class CheatApp(HydraHeadApp):
 
         st.sidebar.title('--------------------------------------')
 
-        st.sidebar.title(':violet[Paramètres quantique] :hammer_and_wrench: :')
+        st.sidebar.title(':violet[Paramètres quantique] :zap: :')
 
 
         st.sidebar.markdown("Nombre de Qubits :")
