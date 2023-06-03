@@ -54,13 +54,13 @@ class CheatApp(HydraHeadApp):
 
         st.markdown("""
             <style>
-            .css-1kyxreq.etr89bj0 .css-1v0mbdj.etr89bj1 {
+            .css-1v0mbdj.etr89bj1 {
                 display: flex;
                 justify-content: center;
                 align-items: center;
             }
 
-            .css-1kyxreq.etr89bj0 .css-1v0mbdj.etr89bj1 img {
+            .css-1v0mbdj.etr89bj1 img {
                 max-height: 100%;
                 width: auto;
                 border: 2px solid #fff;
@@ -82,7 +82,7 @@ class CheatApp(HydraHeadApp):
                     return False
             return True
 
-        st.sidebar.title(':blue[Paramètres classique] :zap: :')
+        st.sidebar.title(':blue[Paramètres classique] :hammer_and_wrench: :')
 
         option = st.sidebar.radio("Choisissez une option :",
                                   ("Insérer le nombre N", "Insérer les nombres premiers","Génération aléatoire"))
@@ -133,7 +133,7 @@ class CheatApp(HydraHeadApp):
 
         st.sidebar.title('--------------------------------------')
 
-        st.sidebar.title('Paramètres quantique :hammer_and_wrench: :')
+        st.sidebar.title(':violet[Paramètres quantique] :zap: :')
 
 
         st.sidebar.markdown("Nombre de Qubits :")
@@ -145,7 +145,7 @@ class CheatApp(HydraHeadApp):
 
         st.sidebar.title('--------------------------------------')
 
-        st.sidebar.title("Paramètres d'optimisation :pushpin: :")
+        st.sidebar.title(":green[Paramètres d'optimisation] :pushpin: :")
 
         fraction_accuracy = st.sidebar.number_input("Precision de la Fraction :", min_value=1, value=20,
 
@@ -157,7 +157,7 @@ class CheatApp(HydraHeadApp):
 
         st.sidebar.title('--------------------------------------')
 
-        st.sidebar.title("Options d'exécution (facultatif) :bow_and_arrow: :")
+        st.sidebar.title(":orange[Options d'exécution (facultatif)] :bow_and_arrow: :")
 
         qpc_option = st.sidebar.radio("Veuillez sélectionner l'option d'exécution : ",
                                       ("Ordinateur quantique (Simulateur)", "Ordinateur quantique"))
