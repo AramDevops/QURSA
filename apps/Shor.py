@@ -105,7 +105,7 @@ class CheatApp(HydraHeadApp):
 
         elif option == "Génération aléatoire":
 
-            ln = st.sidebar.number_input("Longueur des nombres premiers :", min_value=1, value=2,
+            ln = st.sidebar.number_input("Longueur des nombres premiers :", min_value=1, value=2,max_value=8,
                                              key="primes_gen")
             def generator(v_ln):
                 range_start = 10 ** (v_ln - 1)
