@@ -27,10 +27,10 @@ import concurrent.futures
 import threading
 
 # Shared variable to indicate if a factor is found
-factor_found = False
+
 # Lock to synchronize access to the shared variable
 factor_lock = threading.Lock()
-
+factor_found = False
 p_q_list = []
 
 IBMQ.save_account('25ec632a10279f5d4a7deb00aaf8b96f03a5351d0942fd8b3825d13419faf79529d6a1a2032475d437a3dbbfdfb120fc7edd383f7746784f7fab096704f0057e')
@@ -82,7 +82,7 @@ class CheatApp(HydraHeadApp):
                     return False
             return True
 
-        st.sidebar.title(':blue[Paramètres classique] :hammer_and_wrench: :')
+        st.sidebar.title(':blue[Paramètres classique] :zap: :')
 
         option = st.sidebar.radio("Choisissez une option :",
                                   ("Insérer le nombre N", "Insérer les nombres premiers","Génération aléatoire"))
@@ -133,7 +133,7 @@ class CheatApp(HydraHeadApp):
 
         st.sidebar.title('--------------------------------------')
 
-        st.sidebar.title(':violet[Paramètres quantique] :zap: :')
+        st.sidebar.title('Paramètres quantique :hammer_and_wrench: :')
 
 
         st.sidebar.markdown("Nombre de Qubits :")
@@ -145,7 +145,7 @@ class CheatApp(HydraHeadApp):
 
         st.sidebar.title('--------------------------------------')
 
-        st.sidebar.title(":green[Paramètres d'optimisation] :pushpin: :")
+        st.sidebar.title("Paramètres d'optimisation :pushpin: :")
 
         fraction_accuracy = st.sidebar.number_input("Precision de la Fraction :", min_value=1, value=20,
 
@@ -157,7 +157,7 @@ class CheatApp(HydraHeadApp):
 
         st.sidebar.title('--------------------------------------')
 
-        st.sidebar.title(":orange[Options d'exécution (facultatif)] :bow_and_arrow: :")
+        st.sidebar.title("Options d'exécution (facultatif) :bow_and_arrow: :")
 
         qpc_option = st.sidebar.radio("Veuillez sélectionner l'option d'exécution : ",
                                       ("Ordinateur quantique (Simulateur)", "Ordinateur quantique"))
@@ -367,30 +367,29 @@ class CheatApp(HydraHeadApp):
                 t = t + n
             return t
 
-        list_r_val, rows, measured_phases = [], [], []
+        r_list, futures, data_counts, list_r_val, rows, measured_phases = [], [], [], [], [], []
 
-        a = value_a(N)
-        qc = period_finder(controll_qubits, target_qubits, a)
-        counts = execute(qc, backend=backend).result().get_counts(qc)
+        def phase_estim():
+            a = value_a(N)
+            qc = period_finder(controll_qubits, target_qubits, a)
+            counts = execute(qc, backend=backend).result().get_counts(qc)
+            data_counts.append(counts)
+            for output in counts:
+                decimal = int(output, 2)  # convert binary numbers to decimal
+                phase = decimal / (2 ** controll_qubits)  # find eigenvalues
+                measured_phases.append(phase)
+            for estimated_phase in measured_phases:
+                frac = Fraction(estimated_phase).limit_denominator(fraction_accuracy)
+                rows.append([phase, "%i/%i" % (frac.numerator, frac.denominator), frac.denominator])
+                list_r_val.append(frac.denominator)
+            for i in list(set(list_r_val)):
+                r_list.append(i)
 
-        for output in counts:
-            decimal = int(output, 2)  # convert binary numbers to decimal
-            phase = decimal / (2 ** controll_qubits)  # find eigenvalues
-            measured_phases.append(phase)
-
-        for estimated_phase in measured_phases:
-            frac = Fraction(estimated_phase).limit_denominator(fraction_accuracy)
-            rows.append([phase, "%i/%i" % (frac.numerator, frac.denominator), frac.denominator])
-            list_r_val.append(frac.denominator)
-
-        r_simplifier = list(set(list_r_val))
-
-        futures = []
-
-        def p_q_finder(r_sl):
+        def p_q_finder():
             start_time = time.time()
-            global factor_found, r_val, guesses
+            global factor_found
             attempt = 0
+            #print(r_list)
             while not factor_found:
                 if stop_button:
                     st.write("Calcul arrêté.")
@@ -401,10 +400,9 @@ class CheatApp(HydraHeadApp):
                 try:
                     attempt += 1
                     value_a_input = value_a(N)
-                    # print(f" a = {a}", end='\t')
-                    # print(" ")
+                    #print(f"a = {value_a_input}")
                     factors = set()
-                    for r_val in r_sl:
+                    for r_val in r_list:
                         power_val = int(r_val / 2)
                         power_result = value_a_input ** power_val
                         guesses = [
@@ -417,8 +415,8 @@ class CheatApp(HydraHeadApp):
                             factors.add(guess)
                         """ 
                          print(tabulate(rows,
-                                                    headers=["Phase", "Fraction", "Guess for r"],
-                                                    colalign=('right', 'right', 'right')))
+                              headers=["Phase", "Fraction", "Guess for r"],
+                              colalign=('right', 'right', 'right')))
                         """
                     df = pd.DataFrame(rows, columns=["Phase", "Fraction", "Guess for r"])
                     # Initialize futures as an empty list before the if statement
@@ -452,9 +450,9 @@ class CheatApp(HydraHeadApp):
                             l_qc = period_finder(controll_qubits, target_qubits, value_a_input)
                             st.write("\nTentative %i:" % attempt)
                             st.write(l_qc.draw(output='mpl'))
-                            st.write(plot_histogram(counts))
+                            st.write(plot_histogram(data_counts))
 
-                            print(counts)
+                            print(data_counts)
 
                             st.write("P et Q trouvé avec l'ordinateur quantique : ")
                             st.write('N = ', Q, ' x ', P)
@@ -479,6 +477,7 @@ class CheatApp(HydraHeadApp):
 
         if len(msg_ssl)>0:
             if st.button("Démarrer l'algorithme", key="button3"):
+                phase_estim()
                 stop_button = st.button("Arrêter le calcul", key="button2")
                 st.write("Chargement...", end='\t')
                 st.write("Connexion à l'ordinateur quantique...", end='\t')
@@ -488,6 +487,6 @@ class CheatApp(HydraHeadApp):
                 executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_instances)
 
                 # Submit the function multiple times to the executor
-                futures = [executor.submit(p_q_finder(r_simplifier)) for _ in range(num_instances)]
+                futures = [executor.submit(p_q_finder()) for _ in range(num_instances)]
 
                 concurrent.futures.wait(futures)
