@@ -392,7 +392,7 @@ class CheatApp(HydraHeadApp):
             attempt = 0
             while len(factor_stat) == 0 :
                 if stop_button:
-                    st.write("Calcul arrêté.")
+                    factor_stat.append(True)
                     break
 
                 try:
