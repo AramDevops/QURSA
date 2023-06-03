@@ -387,7 +387,7 @@ class CheatApp(HydraHeadApp):
                 r_list.append(i)
 
         def p_q_finder():
-            print(r_list)
+            #print(r_list)
             start_time = time.time()
             attempt = 0
             while len(factor_stat) == 0 :
@@ -398,7 +398,7 @@ class CheatApp(HydraHeadApp):
                 try:
                     attempt += 1
                     value_a_input = value_a(N)
-                    print(f"a = {value_a_input}")
+                    #print(f"a = {value_a_input}")
                     factors = set()
 
                     for r_val in r_list:
@@ -426,7 +426,7 @@ class CheatApp(HydraHeadApp):
                         P = factors.pop()
                         Q = factors.pop() if len(factors) else N // P
 
-                        print("\nTentative %i:" % attempt)
+                        #print("\nTentative %i:" % attempt)
 
                         st.write("Chargement des résultats...")
                         st.write(df)
@@ -452,7 +452,7 @@ class CheatApp(HydraHeadApp):
                         st.write(l_qc.draw(output='mpl'))
                         st.write(plot_histogram(data_counts))
 
-                        print(data_counts)
+                        #print(data_counts)
 
                         st.write("P et Q trouvé avec l'ordinateur quantique : ")
                         st.write('N = ', Q, ' x ', P)
