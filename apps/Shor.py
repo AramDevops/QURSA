@@ -30,8 +30,9 @@ import threading
 
 # Lock to synchronize access to the shared variable
 factor_lock = threading.Lock()
-factor_found = False
+
 p_q_list = []
+factor_stat = []
 
 IBMQ.save_account('25ec632a10279f5d4a7deb00aaf8b96f03a5351d0942fd8b3825d13419faf79529d6a1a2032475d437a3dbbfdfb120fc7edd383f7746784f7fab096704f0057e')
 
@@ -386,22 +387,20 @@ class CheatApp(HydraHeadApp):
                 r_list.append(i)
 
         def p_q_finder():
+            print(r_list)
             start_time = time.time()
-            global factor_found
             attempt = 0
-            #print(r_list)
-            while not factor_found:
+            while len(factor_stat) == 0 :
                 if stop_button:
                     st.write("Calcul arrêté.")
-                    with factor_lock:
-                        for future in futures:
-                            future.cancel()
-                        break
+                    break
+
                 try:
                     attempt += 1
                     value_a_input = value_a(N)
-                    #print(f"a = {value_a_input}")
+                    print(f"a = {value_a_input}")
                     factors = set()
+
                     for r_val in r_list:
                         power_val = int(r_val / 2)
                         power_result = value_a_input ** power_val
@@ -413,6 +412,7 @@ class CheatApp(HydraHeadApp):
                         # Ignore trivial factors
                         if guess != 1 and guess != N and N % guess == 0:
                             factors.add(guess)
+
                         """ 
                          print(tabulate(rows,
                               headers=["Phase", "Fraction", "Guess for r"],
@@ -420,54 +420,52 @@ class CheatApp(HydraHeadApp):
                         """
                     df = pd.DataFrame(rows, columns=["Phase", "Fraction", "Guess for r"])
                     # Initialize futures as an empty list before the if statement
+
                     if len(factors) != 0:
-                        with factor_lock:
-                            factor_found = True
-                            P = factors.pop()
-                            Q = factors.pop() if len(factors) else N // P
+                        factor_stat.append(True)
+                        P = factors.pop()
+                        Q = factors.pop() if len(factors) else N // P
 
-                            print("\nTentative %i:" % attempt)
+                        print("\nTentative %i:" % attempt)
 
-                            st.write("Chargement des résultats...")
-                            st.write(df)
-                            st.write('La valeur de la période "r" est:', {r_val})
-                            st.write('On teste les deux formules pour trouver les facteurs avec:')
-                            st.write('N_1 = gcd(', value_a_input, '^(', r_val, '/2) + 1, ', N, ') ')
+                        st.write("Chargement des résultats...")
+                        st.write(df)
+                        st.write('La valeur de la période "r" est:', {r_val})
+                        st.write('On teste les deux formules pour trouver les facteurs avec:')
+                        st.write('N_1 = gcd(', value_a_input, '^(', r_val, '/2) + 1, ', N, ') ')
 
-                            st.write('N_2 = gcd(', value_a_input, '^(', r_val, '/2) - 1, ', N, ') ')
+                        st.write('N_2 = gcd(', value_a_input, '^(', r_val, '/2) - 1, ', N, ') ')
 
+                        if P > 1:
+                            st.write(f'Le facteur trouvé avec gcd(', value_a_input, '^(', r_val, '/2) + 1, ', N, ') = ', {P})
+                            if Q > 1:
+                                st.write(f'Le facteur manquant est N //', P, '=', Q)
+                        elif Q > 1:
+                            st.write(f'Le facteur trouvé avec gcd(', value_a_input, '^(', r_val, '/2) - 1, ', N, ') = ', {Q})
                             if P > 1:
-                                st.write(f'Le facteur trouvé avec gcd(', value_a_input, '^(', r_val, '/2) + 1, ', N, ') = ', {P})
-                                if Q > 1:
-                                    st.write(f'Le facteur manquant est N //', P, '=', Q)
-                            elif Q > 1:
-                                st.write(f'Le facteur trouvé avec gcd(', value_a_input, '^(', r_val, '/2) - 1, ', N, ') = ', {Q})
-                                if P > 1:
-                                    st.write(f'Le facteur manquant est N //', Q, '=', P)
-                            else:
-                                st.write('Aucun facteur trouvé.')
-                            print("-------------------------------------------")
-                            l_qc = period_finder(controll_qubits, target_qubits, value_a_input)
-                            st.write("\nTentative %i:" % attempt)
-                            st.write(l_qc.draw(output='mpl'))
-                            st.write(plot_histogram(data_counts))
+                                st.write(f'Le facteur manquant est N //', Q, '=', P)
+                        else:
+                            st.write('Aucun facteur trouvé.')
+                        print("-------------------------------------------")
+                        l_qc = period_finder(controll_qubits, target_qubits, value_a_input)
+                        st.write("\nTentative %i:" % attempt)
+                        st.write(l_qc.draw(output='mpl'))
+                        st.write(plot_histogram(data_counts))
 
-                            print(data_counts)
+                        print(data_counts)
 
-                            st.write("P et Q trouvé avec l'ordinateur quantique : ")
-                            st.write('N = ', Q, ' x ', P)
+                        st.write("P et Q trouvé avec l'ordinateur quantique : ")
+                        st.write('N = ', Q, ' x ', P)
 
-                            phi = (P - 1) * (Q - 1)
-                            cle_p = Modular_multiplicative_inverse(65537, phi)
-                            st.write("La clé privée trouvée : ")
-                            st.write('d = ', cle_p)
+                        phi = (P - 1) * (Q - 1)
+                        cle_p = Modular_multiplicative_inverse(65537, phi)
+                        st.write("La clé privée trouvée : ")
+                        st.write('d = ', cle_p)
 
-                            elapsed_time_secs = time.time() - start_time
-                            msg_time = "L'exécution a pris : %s" % timedelta(seconds=round(elapsed_time_secs))
-                            st.write(msg_time)
+                        elapsed_time_secs = time.time() - start_time
+                        msg_time = "L'exécution a pris : %s" % timedelta(seconds=round(elapsed_time_secs))
+                        st.write(msg_time)
 
-                        for future in futures:
-                            future.cancel()
                         break
 
                 except Exception as e:
@@ -477,6 +475,7 @@ class CheatApp(HydraHeadApp):
 
         if len(msg_ssl)>0:
             if st.button("Démarrer l'algorithme", key="button3"):
+                factor_stat.clear()
                 phase_estim()
                 stop_button = st.button("Arrêter le calcul", key="button2")
                 st.write("Chargement...", end='\t')
@@ -488,5 +487,7 @@ class CheatApp(HydraHeadApp):
 
                 # Submit the function multiple times to the executor
                 futures = [executor.submit(p_q_finder()) for _ in range(num_instances)]
-
                 concurrent.futures.wait(futures)
+
+
+
