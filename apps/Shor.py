@@ -30,8 +30,8 @@ import threading
 
 # Lock to synchronize access to the shared variable
 factor_lock = threading.Lock()
-
 p_q_list = []
+a_user = []
 factor_stat = []
 
 IBMQ.save_account('25ec632a10279f5d4a7deb00aaf8b96f03a5351d0942fd8b3825d13419faf79529d6a1a2032475d437a3dbbfdfb120fc7edd383f7746784f7fab096704f0057e')
@@ -105,7 +105,7 @@ class CheatApp(HydraHeadApp):
 
         elif option == "Génération aléatoire":
 
-            ln = st.sidebar.number_input("Longueur des nombres premiers :", min_value=1, value=2,max_value=8,
+            ln = st.sidebar.number_input("Longueur des nombres premiers :", min_value=1, value=2,
                                              key="primes_gen")
             def generator(v_ln):
                 range_start = 10 ** (v_ln - 1)
@@ -129,7 +129,13 @@ class CheatApp(HydraHeadApp):
         if a_option == "Oui":
             value_a_input = st.sidebar.number_input("Valeur de a :", min_value=1, value=7,
                                               key="a_value_user")
+            a_user.clear()
+            a_user.append(value_a_input)
+
+            st.write("La valeur de 'a' est : ",a_user[0])
+
         elif a_option == "Non":
+            a_user.clear()
             st.sidebar.markdown("La valeur de 'a' va être aléatoire !")
 
         st.sidebar.title('--------------------------------------')
@@ -371,7 +377,10 @@ class CheatApp(HydraHeadApp):
         r_list, futures, data_counts, list_r_val, rows, measured_phases = [], [], [], [], [], []
 
         def phase_estim():
-            a = value_a(N)
+            if len(a_user) > 0:
+                a = a_user[0]
+            else:
+                a = value_a(N)
             qc = period_finder(controll_qubits, target_qubits, a)
             counts = execute(qc, backend=backend).result().get_counts(qc)
             data_counts.append(counts)
@@ -387,32 +396,45 @@ class CheatApp(HydraHeadApp):
                 r_list.append(i)
 
         def p_q_finder():
-            #print(r_list)
+            print(r_list)
             start_time = time.time()
             attempt = 0
             while len(factor_stat) == 0 :
                 if stop_button:
-                    factor_stat.append(True)
+                    st.write("Calcul arrêté.")
                     break
-
                 try:
                     attempt += 1
-                    value_a_input = value_a(N)
-                    #print(f"a = {value_a_input}")
+                    if len(a_user) > 0:
+                        n_value_a = a_user[0]
+                    else:
+                        n_value_a = value_a(N)
+
                     factors = set()
+                    ls_periods = []
 
                     for r_val in r_list:
-                        power_val = int(r_val / 2)
-                        power_result = value_a_input ** power_val
-                        guesses = [
-                            math.gcd(power_result + 1, N),
-                            math.gcd(power_result - 1, N)
-                        ]
-                    for guess in guesses:
-                        # Ignore trivial factors
-                        if guess != 1 and guess != N and N % guess == 0:
-                            factors.add(guess)
+                        div_val = int(r_val // 2)
+                        multi_val = int(r_val * 2)
 
+                        power_result1 = n_value_a ** div_val
+                        power_result2 = n_value_a ** multi_val
+                        power_result3 = n_value_a ** r_val
+
+                        guesses = [
+                            (power_result1 + 1, r_val),
+                            (power_result1 - 1, r_val),
+                            (power_result2 + 1, multi_val),
+                            (power_result2 - 1, multi_val),
+                            (power_result3 + 1, div_val),
+                            (power_result3 - 1, div_val)
+                        ]
+
+                        for guess, source in guesses:
+                            my_gcd = math.gcd(guess, N)
+                            if my_gcd != 1 and my_gcd != N:
+                                factors.add(my_gcd)
+                                ls_periods.append(source)
                         """ 
                          print(tabulate(rows,
                               headers=["Phase", "Fraction", "Guess for r"],
@@ -423,36 +445,37 @@ class CheatApp(HydraHeadApp):
 
                     if len(factors) != 0:
                         factor_stat.append(True)
+                        r = ls_periods[0]
                         P = factors.pop()
                         Q = factors.pop() if len(factors) else N // P
 
-                        #print("\nTentative %i:" % attempt)
+                        print("\nTentative %i:" % attempt)
 
                         st.write("Chargement des résultats...")
                         st.write(df)
-                        st.write('La valeur de la période "r" est:', {r_val})
+                        st.write('La valeur de la période "r" est:', {r})
                         st.write('On teste les deux formules pour trouver les facteurs avec:')
-                        st.write('N_1 = gcd(', value_a_input, '^(', r_val, '/2) + 1, ', N, ') ')
+                        st.write('N_1 = gcd(', n_value_a, '^(', r, '/2) + 1, ', N, ') ')
 
-                        st.write('N_2 = gcd(', value_a_input, '^(', r_val, '/2) - 1, ', N, ') ')
+                        st.write('N_2 = gcd(', n_value_a, '^(', r, '/2) - 1, ', N, ') ')
 
                         if P > 1:
-                            st.write(f'Le facteur trouvé avec gcd(', value_a_input, '^(', r_val, '/2) + 1, ', N, ') = ', {P})
+                            st.write(f'Le facteur trouvé avec gcd(', n_value_a, '^(', r, '/2) + 1, ', N, ') = ', {P})
                             if Q > 1:
                                 st.write(f'Le facteur manquant est N //', P, '=', Q)
                         elif Q > 1:
-                            st.write(f'Le facteur trouvé avec gcd(', value_a_input, '^(', r_val, '/2) - 1, ', N, ') = ', {Q})
+                            st.write(f'Le facteur trouvé avec gcd(', n_value_a, '^(', r, '/2) - 1, ', N, ') = ', {Q})
                             if P > 1:
                                 st.write(f'Le facteur manquant est N //', Q, '=', P)
                         else:
                             st.write('Aucun facteur trouvé.')
                         print("-------------------------------------------")
-                        l_qc = period_finder(controll_qubits, target_qubits, value_a_input)
+                        l_qc = period_finder(controll_qubits, target_qubits, n_value_a)
                         st.write("\nTentative %i:" % attempt)
                         st.write(l_qc.draw(output='mpl'))
                         st.write(plot_histogram(data_counts))
 
-                        #print(data_counts)
+                        print(data_counts)
 
                         st.write("P et Q trouvé avec l'ordinateur quantique : ")
                         st.write('N = ', Q, ' x ', P)
@@ -488,6 +511,4 @@ class CheatApp(HydraHeadApp):
                 # Submit the function multiple times to the executor
                 futures = [executor.submit(p_q_finder()) for _ in range(num_instances)]
                 concurrent.futures.wait(futures)
-
-
 
