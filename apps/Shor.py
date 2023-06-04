@@ -299,8 +299,6 @@ class CheatApp(HydraHeadApp):
             c_modN_values = [c_modN(a, k) for k in range(n)]  # Precompute c_modN values
 
             for k, c_modN_value in enumerate(c_modN_values):
-                if k > 0:
-                    qc.barrier()  # Add a barrier between iterations if needed
                 qc.append(c_modN_value, [k] + list(range(n, n + m)))
 
         def qft_dagger(qc, measurement_qubits):
@@ -326,8 +324,6 @@ class CheatApp(HydraHeadApp):
                     qc.cx(i, j)
                 for j in err_target_qubits:
                     qc.x(j)
-
-            qc.barrier()
 
         def period_finder(n, m, a):
             # set up quantum circuit
