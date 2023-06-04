@@ -312,12 +312,12 @@ class CheatApp(HydraHeadApp):
         def measure(qc, n):
             qc.measure(n, n)
 
-        def error_correction(qc, n,m-1):
+        def error_correction(qc, n,m):
             qc.reset(range(n))
             qc.barrier()
 
             err_control_qubits = range(n)
-            err_target_qubits = range(n,n+m)  # Assuming 3 target qubits for this example
+            err_target_qubits = range(n,n+m-1)  # Assuming 3 target qubits for this example
 
             for i in err_control_qubits:
                 # apply CNOT gates to correct bit flip errors
