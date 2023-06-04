@@ -385,7 +385,7 @@ class CheatApp(HydraHeadApp):
                 list_r_val.append(frac.denominator//2)
             for i in list(set(list_r_val)):
                 r_list.append(i)
-            st.write(r_list)
+            #st.write(r_list)
         def p_q_finder():
             start_time = time.time()
             attempt = 0
