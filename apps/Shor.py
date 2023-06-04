@@ -312,7 +312,7 @@ class CheatApp(HydraHeadApp):
         def measure(qc, n):
             qc.measure(n, n)
 
-        def error_correction(qc, n,m):
+        def error_correction(qc, n,m-1):
             qc.reset(range(n))
             qc.barrier()
 
