@@ -417,7 +417,7 @@ class CheatApp(HydraHeadApp):
                             math.gcd(two_power_result - 1, N)
                         ]
 
-                        for guess, sign in guesses:
+                        for guess in guesses:
                             # Ignore trivial factors
                             if guess != 1 and guess != N and N % guess == 0:
                                 factors.add(guess)
