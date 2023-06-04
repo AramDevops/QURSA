@@ -376,7 +376,7 @@ class CheatApp(HydraHeadApp):
 
         r_list, futures, data_counts, list_r_val, rows, measured_phases = [], [], [], [], [], []
 
-        def phase_estim():
+        def phase_estimator():
             if len(a_user) > 0:
                 a = a_user[0]
             else:
@@ -416,9 +416,14 @@ class CheatApp(HydraHeadApp):
                     for r_val in r_list:
                         power_val = r_val // 2
                         power_result = pow(n_value_a, power_val)
+
+                        two_power_val = r_val
+                        two_power_result = pow(n_value_a, two_power_val)
                         guesses = [
                             (math.gcd(power_result + 1, N), 1),
-                            (math.gcd(power_result - 1, N), 0)
+                            (math.gcd(power_result - 1, N), 0),
+                            (math.gcd(two_power_result + 1, N), 1),
+                            (math.gcd(two_power_result - 1, N), 0)
                         ]
 
                         for guess, sign in guesses:
@@ -471,6 +476,8 @@ class CheatApp(HydraHeadApp):
                         st.write(l_qc.draw(output='mpl'))
                         st.write(plot_histogram(data_counts))
 
+                        print(data_counts)
+
                         st.write("P et Q trouvé avec l'ordinateur quantique :")
                         st.write('N = ', Q, ' x ', P)
 
@@ -493,7 +500,7 @@ class CheatApp(HydraHeadApp):
         if len(msg_ssl)>0:
             if st.button("Démarrer l'algorithme", key="button3"):
                 factor_stat.clear()
-                phase_estim()
+                phase_estimator()
                 stop_button = st.button("Arrêter le calcul", key="button2")
                 st.write("Chargement...", end='\t')
                 st.write("Connexion à l'ordinateur quantique...", end='\t')
@@ -503,7 +510,7 @@ class CheatApp(HydraHeadApp):
                 executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_instances)
 
                 # Submit the function multiple times to the executor
-                futures = [executor.submit(p_q_finder) for _ in range(num_instances)]
+                futures = [executor.submit(p_q_finder()) for _ in range(num_instances)]
                 concurrent.futures.wait(futures)
 
 
