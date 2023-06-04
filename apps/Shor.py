@@ -471,8 +471,6 @@ class CheatApp(HydraHeadApp):
                         st.write(l_qc.draw(output='mpl'))
                         st.write(plot_histogram(data_counts))
 
-                        print(data_counts)
-
                         st.write("P et Q trouvé avec l'ordinateur quantique :")
                         st.write('N = ', Q, ' x ', P)
 
