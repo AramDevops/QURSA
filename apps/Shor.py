@@ -373,7 +373,7 @@ class CheatApp(HydraHeadApp):
             if len(a_user) > 0:
                 a = a_user[0]
             else:
-                a = value_a(N)
+                a = 7
             qc = period_finder(controll_qubits, target_qubits, a)
             counts = execute(qc, backend=backend).result().get_counts(qc)
             data_counts.append(counts)
@@ -386,10 +386,9 @@ class CheatApp(HydraHeadApp):
                 rows.append([phase, "%i/%i" % (frac.numerator, frac.denominator), frac.denominator])
                 list_r_val.append(frac.denominator)
             for i in list(set(list_r_val)):
-                r_list.append(i)
+                r_list.append(i//2)
 
         def p_q_finder():
-            print(r_list)
             start_time = time.time()
             attempt = 0
             while len(factor_stat) == 0 :
@@ -407,14 +406,10 @@ class CheatApp(HydraHeadApp):
                     ls_periods = []
 
                     for r_val in r_list:
-                        power_val = r_val // 2
-                        power_result = pow(n_value_a, power_val)
-                        two_power_result = pow(n_value_a, r_val)
+                        power_result = pow(n_value_a, r_val)
                         guesses = [
                             math.gcd(power_result + 1, N),
-                            math.gcd(power_result - 1, N),
-                            math.gcd(two_power_result + 1, N),
-                            math.gcd(two_power_result - 1, N)
+                            math.gcd(power_result - 1, N)
                         ]
 
                         for guess in guesses:
