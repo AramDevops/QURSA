@@ -413,21 +413,20 @@ class CheatApp(HydraHeadApp):
                     factors = set()
                     ls_periods = []
 
-
                     for r_val in r_list:
                         power_val = r_val // 2
-                        power_result = n_value_a ** power_val
+                        power_result = pow(n_value_a, power_val)
                         guesses = [
-                            math.gcd(power_result + 1, N),
-                            math.gcd(power_result - 1, N)
+                            (math.gcd(power_result + 1, N), 1),
+                            (math.gcd(power_result - 1, N), 0)
                         ]
 
-
-                    for guess in guesses:
-                        # Ignore trivial factors
-                        if guess != 1 and guess != N and N % guess == 0:
-                            factors.add(guess)
-                            ls_periods.append(r_val)
+                        for guess, sign in guesses:
+                            # Ignore trivial factors
+                            if guess != 1 and guess != N and N % guess == 0:
+                                factors.add(guess)
+                                ls_periods.append(r_val)
+                                ls_periods.append(sign)
 
                         """ 
                          print(tabulate(rows,
@@ -438,9 +437,10 @@ class CheatApp(HydraHeadApp):
                     # Initialize futures as an empty list before the if statement
 
                     if len(factors) != 0:
-                        df = pd.DataFrame(rows, columns=["Phase", "Fraction", "Guess for r"])
+                        df = pd.DataFrame(rows, columns=["Phase", "Fraction", "Estimation de 'r'"])
                         factor_stat.append(True)
                         r = ls_periods[0]
+                        f_sign = ls_periods[1]
                         P = factors.pop()
                         Q = factors.pop() if len(factors) else N // P
 
@@ -451,20 +451,21 @@ class CheatApp(HydraHeadApp):
                         st.write('La valeur de la période "r" est:', {r})
                         st.write('On teste les deux formules pour trouver les facteurs avec:')
                         st.write('N_1 = gcd(', n_value_a, '^(', r, '/2) + 1, ', N, ') ')
-
                         st.write('N_2 = gcd(', n_value_a, '^(', r, '/2) - 1, ', N, ') ')
 
-                        if P > 1:
-                            st.write(f'Le facteur trouvé avec gcd(', n_value_a, '^(', r, '/2) + 1, ', N, ') = ', {P})
-                            if Q > 1:
-                                st.write(f'Le facteur manquant est N //', P, '=', Q)
-                        elif Q > 1:
-                            st.write(f'Le facteur trouvé avec gcd(', n_value_a, '^(', r, '/2) - 1, ', N, ') = ', {Q})
-                            if P > 1:
-                                st.write(f'Le facteur manquant est N //', Q, '=', P)
+                        st.write(" ")
+
+                        if f_sign == 1:
+                            v = math.gcd(pow(n_value_a,int(r // 2)) + 1 ,N)
+                            st.write(f'Le facteur trouvé avec gcd(', n_value_a, '^(', r, '/2) + 1, ', N, ') = ', {v})
+                            st.write(f'Le facteur manquant est N //', v, '=', N//v)
+                        elif f_sign == 0:
+                            k = math.gcd(pow(n_value_a,int(r // 2)) - 1, N)
+                            st.write(f'Le facteur trouvé avec gcd(', n_value_a, '^(', r, '/2) - 1, ', N, ') = ', {k})
+                            st.write(f'Le facteur manquant est N //', k, '=', N//k)
                         else:
                             st.write('Aucun facteur trouvé.')
-                        print("-------------------------------------------")
+
                         l_qc = period_finder(controll_qubits, target_qubits, n_value_a)
                         st.write("\nTentative %i:" % attempt)
                         st.write(l_qc.draw(output='mpl'))
@@ -472,12 +473,12 @@ class CheatApp(HydraHeadApp):
 
                         print(data_counts)
 
-                        st.write("P et Q trouvé avec l'ordinateur quantique : ")
+                        st.write("P et Q trouvé avec l'ordinateur quantique :")
                         st.write('N = ', Q, ' x ', P)
 
                         phi = (P - 1) * (Q - 1)
                         cle_p = Modular_multiplicative_inverse(65537, phi)
-                        st.write("La clé privée trouvée : ")
+                        st.write("La clé privée trouvée :")
                         st.write('d = ', cle_p)
 
                         elapsed_time_secs = time.time() - start_time
