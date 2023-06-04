@@ -505,7 +505,7 @@ class CheatApp(HydraHeadApp):
                 executor = concurrent.futures.ThreadPoolExecutor(max_workers=num_instances)
 
                 # Submit the function multiple times to the executor
-                futures = [executor.submit(p_q_finder()) for _ in range(num_instances)]
+                futures = [executor.submit(p_q_finder) for _ in range(num_instances)]
                 concurrent.futures.wait(futures)
 
 
