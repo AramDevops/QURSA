@@ -382,8 +382,8 @@ class CheatApp(HydraHeadApp):
             for estimated_phase in measured_phases:
                 frac = Fraction(estimated_phase).limit_denominator(fraction_accuracy)
                 rows.append([phase, "%i/%i" % (frac.numerator, frac.denominator), frac.denominator])
-                list_r_val.append(frac.denominator)
-            for i in list(set(list_r_val//2)):
+                list_r_val.append(frac.denominator//2)
+            for i in list(set(list_r_val)):
                 r_list.append(i)
             st.write(r_list)
         def p_q_finder():
