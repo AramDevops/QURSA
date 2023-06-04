@@ -444,16 +444,19 @@ class CheatApp(HydraHeadApp):
 
                         st.write(" ")
 
-                        if f_sign == 1:
-                            v = math.gcd(pow(n_value_a,int(r // 2)) + 1 ,N)
-                            st.write(f'Le facteur trouvé avec gcd(', n_value_a, '^(', r, '/2) + 1, ', N, ') = ', {v})
-                            st.write(f'Le facteur manquant est N //', v, '=', N//v)
-                        elif f_sign == 0:
-                            k = math.gcd(pow(n_value_a,int(r // 2)) - 1, N)
-                            st.write(f'Le facteur trouvé avec gcd(', n_value_a, '^(', r, '/2) - 1, ', N, ') = ', {k})
-                            st.write(f'Le facteur manquant est N //', k, '=', N//k)
-                        else:
-                            st.write('Aucun facteur trouvé.')
+                        try:
+                            v = math.gcd(pow(n_value_a, int(r // 2)) + 1, N)
+                            k = math.gcd(pow(n_value_a, int(r // 2)) - 1, N)
+
+                            if v != 1:
+                                st.write(f'Le facteur trouvé avec gcd(', n_value_a, '^(', r, '/2) + 1, ', N, ') = ', {v})
+                                st.write(f'Le facteur manquant est N //', v, '=', N // v)
+                            if k != 1:
+                                st.write(f'Le facteur trouvé avec gcd(', a, '^(', r, '/2) - 1, ', N, ') = ', {k})
+                                st.write(f'Le facteur manquant est N //', v, '=', N // v)
+                        except:
+                            print('Aucun facteur trouvé.')
+
 
                         l_qc = period_finder(controll_qubits, target_qubits, n_value_a)
                         st.write("\nTentative %i:" % attempt)
