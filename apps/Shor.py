@@ -370,7 +370,7 @@ class CheatApp(HydraHeadApp):
             if len(a_user) > 0:
                 a = a_user[0]
             else:
-                a = 7
+                a = value_a(N)
             qc = period_finder(controll_qubits, target_qubits, a)
             counts = execute(qc, backend=backend).result().get_counts(qc)
             data_counts.append(counts)
