@@ -296,10 +296,11 @@ class CheatApp(HydraHeadApp):
             return c_U
 
         def modular_exponentiation(qc, n, m, a):
-            c_modN_values = [c_modN(a, k) for k in range(n)]  # Precompute c_modN values
+          c_modN_values = [c_modN(a, k) for k in range(n)]  # Precompute c_modN values
 
-            for k, c_modN_value in enumerate(c_modN_values):
-                qc.append(c_modN_value, [k] + list(range(n, n + m)))
+          for k, c_modN_value in enumerate(c_modN_values):
+            if k > 0:
+              qc.append(c_modN_value, [k] + list(range(n, n + m)))
 
         def qft_dagger(qc, measurement_qubits):
             qc.append(QFT(len(measurement_qubits),
@@ -382,8 +383,8 @@ class CheatApp(HydraHeadApp):
                 frac = Fraction(estimated_phase).limit_denominator(fraction_accuracy)
                 rows.append([phase, "%i/%i" % (frac.numerator, frac.denominator), frac.denominator])
                 list_r_val.append(frac.denominator)
-            for i in list(set(list_r_val)):
-                r_list.append(i//2)
+            for i in list(set(list_r_val//2)):
+                r_list.append(i)
             st.write(r_list)
         def p_q_finder():
             start_time = time.time()
