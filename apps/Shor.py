@@ -409,14 +409,12 @@ class CheatApp(HydraHeadApp):
                     for r_val in r_list:
                         power_val = r_val // 2
                         power_result = pow(n_value_a, power_val)
-
-                        two_power_val = r_val
-                        two_power_result = pow(n_value_a, two_power_val)
+                        two_power_result = pow(n_value_a, r_val)
                         guesses = [
-                            (math.gcd(power_result + 1, N), 1),
-                            (math.gcd(power_result - 1, N), 0),
-                            (math.gcd(two_power_result + 1, N), 1),
-                            (math.gcd(two_power_result - 1, N), 0)
+                            math.gcd(power_result + 1, N),
+                            math.gcd(power_result - 1, N),
+                            math.gcd(two_power_result + 1, N),
+                            math.gcd(two_power_result - 1, N)
                         ]
 
                         for guess, sign in guesses:
@@ -424,7 +422,6 @@ class CheatApp(HydraHeadApp):
                             if guess != 1 and guess != N and N % guess == 0:
                                 factors.add(guess)
                                 ls_periods.append(r_val)
-                                ls_periods.append(sign)
 
                         """ 
                          print(tabulate(rows,
@@ -438,7 +435,6 @@ class CheatApp(HydraHeadApp):
                         df = pd.DataFrame(rows, columns=["Phase", "Fraction", "Estimation de 'r'"])
                         factor_stat.append(True)
                         r = ls_periods[0]
-                        f_sign = ls_periods[1]
                         P = factors.pop()
                         Q = factors.pop() if len(factors) else N // P
 
