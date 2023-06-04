@@ -343,7 +343,8 @@ class CheatApp(HydraHeadApp):
 
             # apply error correction
             error_correction(qc, n, m)
-
+            qc.barrier()
+            
             # apply inverse QFT
             qft_dagger(qc, range(n))
             qc.barrier()
