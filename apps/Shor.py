@@ -412,52 +412,33 @@ class CheatApp(HydraHeadApp):
 
                     factors = set()
                     ls_periods = []
-                    guesses = []
+
 
                     for r_val in r_list:
-                        div_check = False
-                        if r_val % 2 == 0:
-                            div_check = True
-                            div_val = r_val // 2
-                            power_result3 = n_value_a ** div_val
+                        power_val = r_val // 2
+                        power_result = n_value_a ** power_val
+                        guesses = [
+                            math.gcd(power_result + 1, N),
+                            math.gcd(power_result - 1, N)
+                        ]
 
-                        multi_val = r_val * 2
-                        power_result1 = n_value_a ** r_val
-                        power_result2 = n_value_a ** multi_val
 
-                        guesses.extend([
-                            (power_result1 + 1, r_val, 1),
-                            (power_result1 - 1, r_val, 1),
-                            (power_result2 + 1, multi_val, 2),
-                            (power_result2 - 1, multi_val, 2),
-                        ])
+                    for guess in guesses:
+                        # Ignore trivial factors
+                        if guess != 1 and guess != N and N % guess == 0:
+                            factors.add(guess)
+                            ls_periods.append(r_val)
 
-                        if div_check:
-                            guesses.extend([
-                                (power_result3 + 1, div_val, 3),
-                                (power_result3 - 1, div_val, 3),
-                            ])
-
-                    category_operations = {
-                        1: lambda source: ls_periods.append(source),
-                        2: lambda source: ls_periods.append(source / 2),
-                        3: lambda source: ls_periods.append(source * 2)
-                    }
-
-                    for guess, source, category in guesses:
-                        my_gcd = math.gcd(guess, N)
-                        if my_gcd != 1 and my_gcd != N:
-                            factors.add(my_gcd)
-                            category_operations[category](source)
                         """ 
                          print(tabulate(rows,
                               headers=["Phase", "Fraction", "Guess for r"],
                               colalign=('right', 'right', 'right')))
                         """
-                    df = pd.DataFrame(rows, columns=["Phase", "Fraction", "Guess for r"])
+
                     # Initialize futures as an empty list before the if statement
 
                     if len(factors) != 0:
+                        df = pd.DataFrame(rows, columns=["Phase", "Fraction", "Guess for r"])
                         factor_stat.append(True)
                         r = ls_periods[0]
                         P = factors.pop()
@@ -511,7 +492,7 @@ class CheatApp(HydraHeadApp):
                     break
 
         if len(msg_ssl)>0:
-            if st.button("Démarrer l'algorithme", key="button60"):
+            if st.button("Démarrer l'algorithme", key="button3"):
                 factor_stat.clear()
                 phase_estim()
                 stop_button = st.button("Arrêter le calcul", key="button2")
