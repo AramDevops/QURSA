@@ -256,7 +256,7 @@ class CheatApp(HydraHeadApp):
             st.write("Votre valeur Q : ", q)
             N = p * q
 
-        st.write(f'N : ', N)
+        st.write(f'N : ', N, (len(str(N))))
 
         st.write(f'Votre clé publique est : {[N,65537]}')
 
@@ -384,7 +384,7 @@ class CheatApp(HydraHeadApp):
                 list_r_val.append(frac.denominator)
             for i in list(set(list_r_val)):
                 r_list.append(i//2)
-
+        st.write(r_list)
         def p_q_finder():
             start_time = time.time()
             attempt = 0
