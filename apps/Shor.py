@@ -147,7 +147,7 @@ class CheatApp(HydraHeadApp):
         controll_qubits = st.sidebar.number_input("Qubits de Contrôle :", min_value=2, value=5,
                                                   key="controll_qubits")
 
-        target_qubits = st.sidebar.number_input("Qubits cibles :", min_value=2, value=5,
+        target_qubits = st.sidebar.number_input("Qubits cibles :", min_value=2, value=4,
                                                 key="target_qubits")
 
         st.sidebar.title('--------------------------------------')
