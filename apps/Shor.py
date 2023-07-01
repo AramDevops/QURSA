@@ -372,7 +372,7 @@ class CheatApp(HydraHeadApp):
                 a = a_user[0]
             else:
                 a = value_a(N)
-            qc = period_finder(controll_qubits, target_qubits, a)
+            qc = period_finder(controll_qubits+1, target_qubits, a)
             counts = execute(qc, backend=backend).result().get_counts(qc)
             data_counts.append(counts)
             for output in counts:
