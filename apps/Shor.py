@@ -291,7 +291,7 @@ class CheatApp(HydraHeadApp):
                     for q in range(target_qubits):
                         U.x(q)
             U = U.to_gate()
-            U.name = "%i^%i mod N" % (a, k)
+            U.name = "%i^%i mod N" % (a, k-1)
             c_U = U.control()
             return c_U
 
