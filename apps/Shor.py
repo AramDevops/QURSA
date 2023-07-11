@@ -285,10 +285,10 @@ class CheatApp(HydraHeadApp):
         st.write(f"Fonction: \n\tU(x) = a^x mod {N}")
 
         def c_modN(a, k):
-            U = QuantumCircuit(target_qubits)
+            U = QuantumCircuit(target_qubits-1)
             for _ in range(k):
                 if a % 2 != 0:
-                    for q in range(target_qubits):
+                    for q in range(target_qubits-1):
                         U.x(q)
             U = U.to_gate()
             U.name = "%i^%i mod N" % (a, k-1)
