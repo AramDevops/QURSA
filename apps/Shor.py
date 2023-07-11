@@ -285,10 +285,10 @@ class CheatApp(HydraHeadApp):
         st.write(f"Fonction: \n\tU(x) = a^x mod {N}")
 
         def c_modN(a, k):
-            U = QuantumCircuit(target_qubits-1)
+            U = QuantumCircuit(target_qubits)
             for _ in range(k):
                 if a % 2 != 0:
-                    for q in range(target_qubits-1):
+                    for q in range(target_qubits):
                         U.x(q)
             U = U.to_gate()
             U.name = "%i^%i mod N" % (a, k-1)
@@ -296,7 +296,7 @@ class CheatApp(HydraHeadApp):
             return c_U
 
         def modular_exponentiation(qc, n, m, a):
-          c_modN_values = [c_modN(a, k) for k in range(n)]  # Precompute c_modN values
+          c_modN_values = [c_modN(a, k-1) for k in range(n)]  # Precompute c_modN values
 
           for k, c_modN_value in enumerate(c_modN_values):
             if k > 0:
