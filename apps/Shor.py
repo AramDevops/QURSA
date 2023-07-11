@@ -291,15 +291,15 @@ class CheatApp(HydraHeadApp):
                     for q in range(target_qubits):
                         U.x(q)
             U = U.to_gate()
-            U.name = "%i^%i mod N" % (a, k-1)
+            U.name = "%i^%i mod N" % (a, k)
             c_U = U.control()
             return c_U
 
         def modular_exponentiation(qc, n, m, a):
-          c_modN_values = [c_modN(a, k-1) for k in range(n)]  # Precompute c_modN values
+          c_modN_values = [c_modN(a, k) for k in range(n)]  # Precompute c_modN values
 
           for k, c_modN_value in enumerate(c_modN_values):
-            if k > 0:
+            if k >= 0:
               qc.append(c_modN_value, [k] + list(range(n, n + m)))
 
         def qft_dagger(qc, measurement_qubits):
