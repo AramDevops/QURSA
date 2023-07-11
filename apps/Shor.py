@@ -456,7 +456,7 @@ class CheatApp(HydraHeadApp):
                             print('Aucun facteur trouvé.')
 
 
-                        l_qc = period_finder(controll_qubits+1, target_qubits, n_value_a)
+                        l_qc = period_finder(controll_qubits, target_qubits, n_value_a)
                         st.write("\nTentative %i:" % attempt)
                         st.write(l_qc.draw(output='mpl'))
                         st.write(plot_histogram(data_counts))
