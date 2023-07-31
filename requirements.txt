@@ -9,3 +9,4 @@ pylatexenc
 pandas
 sympy
 qiskit-ibmq-provider
+qiskit-aer
