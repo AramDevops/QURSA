@@ -8,3 +8,4 @@ streamlit
 pylatexenc
 pandas
 sympy
+qiskit-ibmq-provider
