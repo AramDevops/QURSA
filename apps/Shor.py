@@ -428,7 +428,7 @@ class CheatApp(HydraHeadApp):
                     if len(factors) != 0 :
                         df = pd.DataFrame(rows, columns=["Phase", "Fraction", "Estimation de 'r'"])
                         factor_stat.append(True)
-                        r = ls_periods[0]
+                        r = ls_periods[0]*2
                         n_a = n_a_val[0]
                         P = factors.pop()
                         Q = factors.pop() if len(factors) else N // P
@@ -437,7 +437,7 @@ class CheatApp(HydraHeadApp):
 
                         st.write("Chargement des résultats...")
                         st.write(df)
-                        st.write('La valeur de la période "r" est:', {r*2})
+                        st.write('La valeur de la période "r" est:', {r})
                         st.write('On teste les deux formules pour trouver les facteurs avec:')
                         st.write('N_1 = gcd(', n_a, '^(', r, '/2) + 1, ', N, ') ')
                         st.write('N_2 = gcd(', n_a, '^(', r, '/2) - 1, ', N, ') ')
