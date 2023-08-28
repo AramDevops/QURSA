@@ -414,7 +414,7 @@ class CheatApp(HydraHeadApp):
                             # Ignore trivial factors
                             if guess != 1 and guess != N and N % guess == 0:
                                 factors.add(guess)
-                                ls_periods.append(r_val)
+                                ls_periods.append(r_val,n_value_a)
 
                         """ 
                          print(tabulate(rows,
@@ -428,6 +428,7 @@ class CheatApp(HydraHeadApp):
                         df = pd.DataFrame(rows, columns=["Phase", "Fraction", "Estimation de 'r'"])
                         factor_stat.append(True)
                         r = ls_periods[0]
+                        n_a = ls_periods[1]
                         P = factors.pop()
                         Q = factors.pop() if len(factors) else N // P
 
@@ -437,26 +438,26 @@ class CheatApp(HydraHeadApp):
                         st.write(df)
                         st.write('La valeur de la période "r" est:', {r})
                         st.write('On teste les deux formules pour trouver les facteurs avec:')
-                        st.write('N_1 = gcd(', n_value_a, '^(', r, '/2) + 1, ', N, ') ')
-                        st.write('N_2 = gcd(', n_value_a, '^(', r, '/2) - 1, ', N, ') ')
+                        st.write('N_1 = gcd(', n_a, '^(', r, '/2) + 1, ', N, ') ')
+                        st.write('N_2 = gcd(', n_a, '^(', r, '/2) - 1, ', N, ') ')
 
                         st.write(" ")
 
                         try:
-                            v = math.gcd(pow(n_value_a, int(r // 2)) + 1, N)
-                            k = math.gcd(pow(n_value_a, int(r // 2)) - 1, N)
+                            v = math.gcd(pow(n_a, int(r // 2)) + 1, N)
+                            k = math.gcd(pow(n_a, int(r // 2)) - 1, N)
 
                             if v != 1:
-                                st.write(f'Le facteur trouvé avec gcd(', n_value_a, '^(', r, '/2) + 1, ', N, ') = ', {v})
+                                st.write(f'Le facteur trouvé avec gcd(', n_a, '^(', r, '/2) + 1, ', N, ') = ', {v})
                                 st.write(f'Le facteur manquant est N //', v, '=', N // v)
                             if k != 1:
-                                st.write(f'Le facteur trouvé avec gcd(', a, '^(', r, '/2) - 1, ', N, ') = ', {k})
+                                st.write(f'Le facteur trouvé avec gcd(', n_a, '^(', r, '/2) - 1, ', N, ') = ', {k})
                                 st.write(f'Le facteur manquant est N //', v, '=', N // v)
                         except:
                             print('Aucun facteur trouvé.')
 
 
-                        l_qc = period_finder(controll_qubits, target_qubits, n_value_a)
+                        l_qc = period_finder(controll_qubits, target_qubits, n_a)
                         st.write("\nTentative %i:" % attempt)
                         st.write(l_qc.draw(output='mpl'))
                         st.write(plot_histogram(data_counts))
