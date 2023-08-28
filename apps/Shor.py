@@ -405,7 +405,7 @@ class CheatApp(HydraHeadApp):
                     n_a_val=[]
 
                     for r_val in r_list:
-                        power_result = pow(n_value_a, r_val)*2
+                        power_result = pow(n_value_a, r_val)
                         guesses = [
                             math.gcd(power_result + 1, N),
                             math.gcd(power_result - 1, N)
@@ -437,7 +437,7 @@ class CheatApp(HydraHeadApp):
 
                         st.write("Chargement des résultats...")
                         st.write(df)
-                        st.write('La valeur de la période "r" est:', {r})
+                        st.write('La valeur de la période "r" est:', {r*2})
                         st.write('On teste les deux formules pour trouver les facteurs avec:')
                         st.write('N_1 = gcd(', n_a, '^(', r, '/2) + 1, ', N, ') ')
                         st.write('N_2 = gcd(', n_a, '^(', r, '/2) - 1, ', N, ') ')
