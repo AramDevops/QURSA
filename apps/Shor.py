@@ -417,11 +417,6 @@ class CheatApp(HydraHeadApp):
                                 factors.add(guess)
                                 ls_periods.append(r_val)
                                 n_a_val.append(n_value_a)
-
-                                st.write(n_a_val)
-                                st.write(ls_periods)
-                                
-
                         """ 
                          print(tabulate(rows,
                               headers=["Phase", "Fraction", "Guess for r"],
