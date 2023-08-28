@@ -430,7 +430,7 @@ class CheatApp(HydraHeadApp):
 
                     # Initialize futures as an empty list before the if statement
 
-                    if len(factors) != 0:
+                    if len(factors) != 0 and len(n_a_val) == 1:
                         df = pd.DataFrame(rows, columns=["Phase", "Fraction", "Estimation de 'r'"])
                         factor_stat.append(True)
                         r = ls_periods[0]
