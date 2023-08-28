@@ -455,7 +455,7 @@ class CheatApp(HydraHeadApp):
                                 st.write(f'Le facteur manquant est N //', v, '=', N // v)
                             if k != 1:
                                 st.write(f'Le facteur trouvé avec gcd(', n_a, '^(', r, '/2) - 1, ', N, ') = ', {k})
-                                st.write(f'Le facteur manquant est N //', v, '=', N // v)
+                                st.write(f'Le facteur manquant est N //', k, '=', N // k)
                         except:
                             print('Aucun facteur trouvé.')
 
