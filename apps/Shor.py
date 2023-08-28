@@ -405,7 +405,7 @@ class CheatApp(HydraHeadApp):
                     n_a_val=[]
 
                     for r_val in r_list:
-                        power_result = pow(n_value_a, r_val)
+                        power_result = pow(n_value_a, r_val)*2
                         guesses = [
                             math.gcd(power_result + 1, N),
                             math.gcd(power_result - 1, N)
@@ -425,7 +425,7 @@ class CheatApp(HydraHeadApp):
 
                     # Initialize futures as an empty list before the if statement
 
-                    if len(factors) != 0 and len(n_a_val) == 1:
+                    if len(factors) != 0 :
                         df = pd.DataFrame(rows, columns=["Phase", "Fraction", "Estimation de 'r'"])
                         factor_stat.append(True)
                         r = ls_periods[0]
