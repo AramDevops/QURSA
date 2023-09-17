@@ -133,12 +133,12 @@ class LoaderTestApp(HydraHeadApp):
 
                     code2 = '''    
                        phi = (P - 1) * (Q - 1)  # 148216
-                        e = 65537
-                        # 1 < 65537 < ϕ(n)
-                        if gcd(e, phi) == 1 and e < phi:
+                       e = 65537
+                       # 1 < 65537 < ϕ(n)
+                       if gcd(e, phi) == 1 and e < phi:
                             print(True)
-                        else:
-                            print(False) '''
+                       else:
+                           print(False) '''
 
                     st.code(code2, language='python')
 
@@ -162,11 +162,11 @@ class LoaderTestApp(HydraHeadApp):
                     
                     code3 = '''    
                     def Modular_multiplicative_inverse(exposant, totient):
-                            for k in range(1, totient):
-                                if (((exposant % totient) * (k % totient)) % totient == 1):
-                                    return k
+                        for k in range(1, totient):
+                            if (((exposant % totient) * (k % totient)) % totient == 1):
+                                return k
 
-                        D = Modular_multiplicative_inverse(e, phi)  # 4401 '''
+                    D = Modular_multiplicative_inverse(e, phi)  # 4401 '''
 
                     st.code(code3, language='python')
  
@@ -191,9 +191,9 @@ class LoaderTestApp(HydraHeadApp):
                         
                     code4 = '''    
                      def Crypter(clef_publique, mon_message):
-                            key, n = clef_publique
-                            msg_chiffré = [(ord(char) ** key) % n for char in message]
-                            return msg_chiffré'''
+                        key, n = clef_publique
+                        msg_chiffré = [(ord(char) ** key) % n for char in message]
+                        return msg_chiffré'''
 
                     st.code(code4, language='python')
                     
@@ -216,9 +216,9 @@ class LoaderTestApp(HydraHeadApp):
                         
                     code5 = '''    
                       def Décrypter(clef_privé, mon_message_crypté):
-                            key, n = clef_privé
-                            msg_déchiffré = [chr((char ** key) % n) for char in mon_message_crypté]
-                            return ''.join(msg_déchiffré) '''
+                        key, n = clef_privé
+                        msg_déchiffré = [chr((char ** key) % n) for char in mon_message_crypté]
+                        return ''.join(msg_déchiffré) '''
 
                     st.code(code5, language='python')
 
