@@ -57,23 +57,7 @@ class LoaderTestApp(HydraHeadApp):
 
                 RSAmin_val = 17
                 with st.sidebar:
-
-                    st.markdown(
-                        "<a style='text-decoration: none; color:#ff5400' href='#prime'>★ Les nombres premiers : </a>",
-                        unsafe_allow_html=True)
-
-                    z = 1000
-                    lower_value = int(
-                        st.number_input("Veuillez saisir la valeur de la plage la plus basse: ", min_value=1,
-                                        max_value=z,
-                                        value=1,
-                                        step=1))
-                    upper_value = int(
-                        st.number_input("Veuillez saisir la valeur supérieure de la plage:  ", min_value=1,
-                                        max_value=z,
-                                        value=20,
-                                        step=1))
-                    st.write(" ")
+                    
                     st.markdown(
                         "<a style='text-decoration: none; color:#ff5400' href='#keygenauto'>★ Veuillez saisir la taille de votre clef :</a>",
                         unsafe_allow_html=True)
@@ -136,26 +120,6 @@ class LoaderTestApp(HydraHeadApp):
                    
                     st.write('N est le module pour la clef publique et la clef privée')
     
-                    if lower_value > upper_value:
-                        st.write(
-                                "La valeur de la plage la plus basse doit être inférieure à la valeur de la plage supérieure : ")
-                    else:
-                        st.markdown("<div id='prime'></div>", unsafe_allow_html=True)
-                        st.markdown(
-                                f"<p class='small-font'>★ Les nombres premiers dans l'intervalle {lower_value} et {upper_value} sont: </p> ",
-                                unsafe_allow_html=True
-                            )
-                        for number in range(lower_value, upper_value + 1):
-                            if number > 1:
-                                for i in range(2, number):
-                                    if (number % i) == 0:
-                                        break
-    
-                            else:
-                                st.markdown(f'<table style="width:100%"><tr><td>{number}</td></tr></table>',
-                                                    unsafe_allow_html=True
-                                                    )
-              
                     st.write(" ")
                     st.markdown(
                         '<div class="formulff"> <p> 2 - Calculer le totient (phi) : </p> <p class="formul-font"> ϕ(n) = (p−1)(q−1) </p> </div>',
