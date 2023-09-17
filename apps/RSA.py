@@ -121,7 +121,7 @@ class LoaderTestApp(HydraHeadApp):
                     st.write("1 - La procédure initiale commence par la sélection de deux nombres premiers p et q, puis calculer leur produit N = pq")
 
           
-                    with st.echo():
+                    st.echo():
                         Q = 389
                         P = 383
                         N = P * Q
