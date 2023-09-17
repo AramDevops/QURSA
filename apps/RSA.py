@@ -119,7 +119,14 @@ class LoaderTestApp(HydraHeadApp):
                     st.markdown("<p class='medium-font'>1.2 - Génération d'une clef RSA  :</p>",
                                 unsafe_allow_html=True)
                     st.write("1 - La procédure initiale commence par la sélection de deux nombres premiers p et q, puis calculer leur produit N = pq")
-                
+
+                    Q = 389
+                    P = 383
+                    N = P * Q
+
+                    phi = (P - 1) * (Q - 1)  # 148216
+                    e = 65537
+                    
                     code1 = '''    
                         Q = 389
                         P = 383
@@ -183,6 +190,12 @@ class LoaderTestApp(HydraHeadApp):
                     st.write("65537 x d (mod 148216) = 1")
                     st.write("65537 x 4401 (mod 148216) = 1")
 
+                    def Modular_multiplicative_inverse(exposant, totient):
+                        for k in range(1, totient):
+                            if (((exposant % totient) * (k % totient)) % totient == 1):
+                                return k
+                     D = Modular_multiplicative_inverse(e, phi)  # 4401
+                    
                     code3 = '''    
                     def Modular_multiplicative_inverse(exposant, totient):
                             for k in range(1, totient):
@@ -226,7 +239,12 @@ class LoaderTestApp(HydraHeadApp):
                     st.markdown(
                         "<div class='formulff'> <p> Pour Décrypter le messages crypté, on utilise la formule </p> <p class='formul-font'> m = c^d(mod N). </p></div> ",
                         unsafe_allow_html=True)
-
+                    
+                    def Décrypter(clef_privé, mon_message_crypté):
+                            key, n = clef_privé
+                            msg_déchiffré = [chr((char ** key) % n) for char in mon_message_crypté]
+                            return ''.join(msg_déchiffré)
+                        
                     code5 = '''    
                       def Décrypter(clef_privé, mon_message_crypté):
                             key, n = clef_privé
