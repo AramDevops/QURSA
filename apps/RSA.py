@@ -119,12 +119,14 @@ class LoaderTestApp(HydraHeadApp):
                     st.markdown("<p class='medium-font'>1.2 - Génération d'une clef RSA  :</p>",
                                 unsafe_allow_html=True)
                     st.write("1 - La procédure initiale commence par la sélection de deux nombres premiers p et q, puis calculer leur produit N = pq")
-
-          
-                    st.echo():
+                
+                    code1 = '''    
                         Q = 389
                         P = 383
-                        N = P * Q
+                        N = P * Q '''
+
+                    st.code(code1, language='python')
+                   
                     st.write('N est le module pour la clef publique et la clef privée')
     
                     if lower_value > upper_value:
