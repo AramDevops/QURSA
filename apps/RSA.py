@@ -159,14 +159,17 @@ class LoaderTestApp(HydraHeadApp):
                         unsafe_allow_html=True)
                     st.write(
                         "La clef publique est partagée ouvertement, donc tout le monde peut la voir, il n'est pas si important que e soit un nombre aléatoire. En pratique, e est généralement fixé à 65 537.")
-                    with st.echo():
-                        phi = (P - 1) * (Q - 1)  # 148216
+
+                    code2 = '''    
+                       phi = (P - 1) * (Q - 1)  # 148216
                         e = 65537
                         # 1 < 65537 < ϕ(n)
                         if gcd(e, phi) == 1 and e < phi:
                             print(True)
                         else:
-                            print(False)
+                            print(False) '''
+
+                    st.code(code2, language='python')
 
                     st.write("Remarque : e est publié comme exposant de la clef publique")
                     st.markdown(
@@ -179,14 +182,17 @@ class LoaderTestApp(HydraHeadApp):
                     st.markdown("<p class='formul-font'> Exemple : </p>", unsafe_allow_html=True)
                     st.write("65537 x d (mod 148216) = 1")
                     st.write("65537 x 4401 (mod 148216) = 1")
-                    with st.echo():
-                        def Modular_multiplicative_inverse(exposant, totient):
+
+                    code3 = '''    
+                    def Modular_multiplicative_inverse(exposant, totient):
                             for k in range(1, totient):
                                 if (((exposant % totient) * (k % totient)) % totient == 1):
                                     return k
 
-                        D = Modular_multiplicative_inverse(e, phi)  # 4401
+                        D = Modular_multiplicative_inverse(e, phi)  # 4401 '''
 
+                    st.code(code3, language='python')
+ 
                     st.write("Remarque : d est conservé comme exposant de la clef privée")
                     st.markdown(
                         "<div class='formulff'> <p> Donc notre clef privée dans ce cas est </p> <p class='formul-font'> (N,d) = (148987,4401)</p>",
@@ -200,12 +206,15 @@ class LoaderTestApp(HydraHeadApp):
                     st.markdown(
                         "<div class='formulff'> <p> Afin de crypter les messages, on utilise la formule </p> <p class='formul-font'> c = m^e(mod N) </p>, la valeur m est le message qu'on veut Crypter.</p> </div> ",
                         unsafe_allow_html=True)
-                    with st.echo():
-                        def Crypter(clef_publique, mon_message):
+
+                    code4 = '''    
+                     def Crypter(clef_publique, mon_message):
                             key, n = clef_publique
                             msg_chiffré = [(ord(char) ** key) % n for char in message]
-                            return msg_chiffré
+                            return msg_chiffré'''
 
+                    st.code(code4, language='python')
+                    
                     message = st.text_input(f"Le message que vous souhaitez chiffrer :")
 
                     st.write("Votre message après le chiffrement avec la clef publique (148987,65537) : ")
@@ -217,11 +226,14 @@ class LoaderTestApp(HydraHeadApp):
                     st.markdown(
                         "<div class='formulff'> <p> Pour Décrypter le messages crypté, on utilise la formule </p> <p class='formul-font'> m = c^d(mod N). </p></div> ",
                         unsafe_allow_html=True)
-                    with st.echo():
-                        def Décrypter(clef_privé, mon_message_crypté):
+
+                    code5 = '''    
+                      def Décrypter(clef_privé, mon_message_crypté):
                             key, n = clef_privé
                             msg_déchiffré = [chr((char ** key) % n) for char in mon_message_crypté]
-                            return ''.join(msg_déchiffré)
+                            return ''.join(msg_déchiffré) '''
+
+                    st.code(code5, language='python')
 
                     st.markdown(
                         f"<div class='formulff'> <p> Le message après le déchiffrement du code QR sachant la clef privée :  </p> <p class='formul-font'> {Décrypter((4401, N), Crypter((65537, 148987), message))}</p></div> ",
