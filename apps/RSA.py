@@ -119,36 +119,35 @@ class LoaderTestApp(HydraHeadApp):
                     st.markdown("<p class='medium-font'>1.2 - Génération d'une clef RSA  :</p>",
                                 unsafe_allow_html=True)
                     st.write("1 - La procédure initiale commence par la sélection de deux nombres premiers p et q, puis calculer leur produit N = pq")
-                    Q = 389
-                    P = 383
-                    N = P * Q
-                    
-                    with st.echo():
-                        Q = 389
-                        P = 383
-                        N = P * Q
-                    st.write('N est le module pour la clef publique et la clef privée')
 
-                    if lower_value > upper_value:
-                        st.write(
-                            "La valeur de la plage la plus basse doit être inférieure à la valeur de la plage supérieure : ")
-                    else:
-                        st.markdown("<div id='prime'></div>", unsafe_allow_html=True)
-                        st.markdown(
-                            f"<p class='small-font'>★ Les nombres premiers dans l'intervalle {lower_value} et {upper_value} sont: </p> ",
-                            unsafe_allow_html=True
-                        )
-                        for number in range(lower_value, upper_value + 1):
-                            if number > 1:
-                                for i in range(2, number):
-                                    if (number % i) == 0:
-                                        break
-
-                                else:
-                                    st.markdown(f'<table style="width:100%"><tr><td>{number}</td></tr></table>',
-                                                unsafe_allow_html=True
-                                                )
-
+                    try:
+                        with st.echo():
+                            Q = 389
+                            P = 383
+                            N = P * Q
+                        st.write('N est le module pour la clef publique et la clef privée')
+    
+                        if lower_value > upper_value:
+                            st.write(
+                                "La valeur de la plage la plus basse doit être inférieure à la valeur de la plage supérieure : ")
+                        else:
+                            st.markdown("<div id='prime'></div>", unsafe_allow_html=True)
+                            st.markdown(
+                                f"<p class='small-font'>★ Les nombres premiers dans l'intervalle {lower_value} et {upper_value} sont: </p> ",
+                                unsafe_allow_html=True
+                            )
+                            for number in range(lower_value, upper_value + 1):
+                                if number > 1:
+                                    for i in range(2, number):
+                                        if (number % i) == 0:
+                                            break
+    
+                                    else:
+                                        st.markdown(f'<table style="width:100%"><tr><td>{number}</td></tr></table>',
+                                                    unsafe_allow_html=True
+                                                    )
+                    except Exception as e:
+                        st.write(e)
                     st.write(" ")
                     st.markdown(
                         '<div class="formulff"> <p> 2 - Calculer le totient (phi) : </p> <p class="formul-font"> ϕ(n) = (p−1)(q−1) </p> </div>',
