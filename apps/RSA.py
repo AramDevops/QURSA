@@ -119,6 +119,10 @@ class LoaderTestApp(HydraHeadApp):
                     st.markdown("<p class='medium-font'>1.2 - Génération d'une clef RSA  :</p>",
                                 unsafe_allow_html=True)
                     st.write("1 - La procédure initiale commence par la sélection de deux nombres premiers p et q, puis calculer leur produit N = pq")
+                    Q = 389
+                    P = 383
+                    N = P * Q
+                    
                     with st.echo():
                         Q = 389
                         P = 383
