@@ -220,6 +220,11 @@ class LoaderTestApp(HydraHeadApp):
                         "<div class='formulff'> <p> Afin de crypter les messages, on utilise la formule </p> <p class='formul-font'> c = m^e(mod N) </p>, la valeur m est le message qu'on veut Crypter.</p> </div> ",
                         unsafe_allow_html=True)
 
+                    def Crypter(clef_publique, mon_message):
+                        key, n = clef_publique
+                        msg_chiffré = [(ord(char) ** key) % n for char in message]
+                        return msg_chiffré
+                        
                     code4 = '''    
                      def Crypter(clef_publique, mon_message):
                             key, n = clef_publique
