@@ -2,7 +2,7 @@ hydralit
 hydralit_components
 matplotlib
 pandas
-qiskit
+qiskit==0.48
 rsa
 streamlit
 pylatexenc
